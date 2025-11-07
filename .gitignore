@@ -12,3 +12,5 @@ dist/
 .env
 
 .idea/
+
+/postgres
