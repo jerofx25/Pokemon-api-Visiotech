@@ -1,11 +1,12 @@
 import { Move } from "../../../move/entities/move.entity";
+import { PokemonType } from "../../../shared/enums/pokemon-type.enum";
 
 export class CreatePokemonDto {
 
   private constructor(
     public readonly name: string,
     public readonly level: number,
-    public readonly type: string,
+    public readonly type: PokemonType,
     public readonly currentHp: number,
     public readonly totalHp: number,
     public readonly attack: number,
@@ -55,6 +56,7 @@ export class CreatePokemonDto {
     
     const parsedMoves = moves.map((m: any) =>
       new Move(
+        Number(m.id),
         m.name,
         m.type,
         m.category,

@@ -13,32 +13,59 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
+enum PokemonType {
+  normal
+  fire
+  water
+  grass
+  electric
+  ice
+  fighting
+  poison
+  ground
+  flying
+  psychic
+  bug
+  rock
+  ghost
+  dark
+  dragon
+  steel
+  fairy
+}
+
+enum MoveCategory {
+  physical
+  special
+  status
+}
+
 model Pokemon {
-  id                Int     @id @default(autoincrement())
-  name              String
-  level             Int
-  type              String   
-  currentHp         Int
-  totalHp           Int
-  attack            Int
-  defense           Int
-  specialAttack     Int
-  specialDefense    Int
-  speed             Int
-  moves PokemonMove[]
+  id              Int          @id @default(autoincrement())
+  name            String
+  level           Int
+  type            PokemonType
+  currentHp       Int
+  totalHp         Int
+  attack          Int
+  defense         Int
+  specialAttack   Int
+  specialDefense  Int
+  speed           Int
+  moves           PokemonMove[]
 }
 
 model Move {
-  id          Int     @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   name        String
-  type        String
-  category    String   // 'physical' | 'special' | 'status'
+  type        PokemonType
+  category    MoveCategory
   power       Int
   accuracy    Int
   pp          Int
   effect      String
-  probability Int?     // can be null
-  pokemon PokemonMove[]
+  probability Int?
+  pokemon     PokemonMove[]
 }
 
 model PokemonMove {

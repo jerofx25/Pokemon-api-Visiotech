@@ -1,4 +1,5 @@
 import { Move } from "../../move/entities/move.entity";
+import { PokemonType } from "../../shared/enums/pokemon-type.enum";
 
 
 export class Pokemon {
@@ -7,7 +8,7 @@ export class Pokemon {
     public readonly id: number,
     public level: number,
     public name: string,
-    public type: string, 
+    public type: PokemonType, 
     public currentHP: number,
     public totalHP: number,
     public baseAttack: number,

@@ -1,4 +1,5 @@
 import { Move } from "../../../move/entities/move.entity";
+import { PokemonType } from "../../../shared/enums/pokemon-type.enum";
 
 export class UpdatePokemonDto {
 
@@ -6,7 +7,7 @@ export class UpdatePokemonDto {
     public readonly id: number,
     public readonly name?: string,
     public readonly level?: number,
-    public readonly type?: string,
+    public readonly type?: PokemonType,
     public readonly currentHp?: number,
     public readonly totalHp?: number,
     public readonly attack?: number,
@@ -54,6 +55,7 @@ export class UpdatePokemonDto {
 
       parsedMoves = moves.map((m: any) =>
         new Move(
+          Number(m.id),
           m.name,
           m.type,
           m.category,

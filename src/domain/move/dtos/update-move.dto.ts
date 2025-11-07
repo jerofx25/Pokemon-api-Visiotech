@@ -1,11 +1,13 @@
-import { Move, MoveCategory } from "../entities/move.entity";
+import { MoveCategory } from "../../shared/enums/move-category.enum";
+import { PokemonType } from "../../shared/enums/pokemon-type.enum";
+
 
 export class UpdateMoveDto {
 
   private constructor(
     public readonly id: number,
     public readonly name?: string,
-    public readonly type?: string,
+    public readonly type?: PokemonType,
     public readonly category?: MoveCategory,
     public readonly power?: number,
     public readonly accuracy?: number,

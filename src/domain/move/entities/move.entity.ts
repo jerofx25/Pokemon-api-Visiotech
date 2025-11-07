@@ -1,12 +1,12 @@
-
-export type MoveCategory = 'physical' | 'special' | 'status';
+import { MoveCategory } from "../../shared/enums/move-category.enum";
+import { PokemonType } from "../../shared/enums/pokemon-type.enum";
 
 export class Move {
 
   constructor(
     public readonly id: number,
     public readonly name: string,
-    public readonly type: string,      
+    public readonly type: PokemonType,      
     public readonly category: MoveCategory,
     public readonly power: number,
     public readonly accuracy: number,
@@ -33,6 +33,12 @@ export class Move {
     if (!name) throw 'Move name is required';
     if (!type) throw 'Move type is required';
     if (!category) throw 'Move category is required';
+
+    const enumType = String(type) as keyof PokemonType;
+    if (!(enumType in PokemonType)) throw `Move type '${type}' is not valid`;
+
+    const enumCategory = String(category) as keyof MoveCategory;
+    if (!(enumCategory in MoveCategory)) throw `Move category '${category}' is not valid`;
 
     const parsedPower = Number(power);
     if (isNaN(parsedPower)) throw 'Move power must be a valid number';

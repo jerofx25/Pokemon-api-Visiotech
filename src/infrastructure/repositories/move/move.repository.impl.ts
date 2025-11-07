@@ -32,5 +32,4 @@ export class MoveRepositoryImpl implements MoveRepository{
         return this.datasource.deleteById(id);
     }
 
-
 }
