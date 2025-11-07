@@ -4,6 +4,7 @@ export type MoveCategory = 'physical' | 'special' | 'status';
 export class Move {
 
   constructor(
+    public readonly id: number,
     public readonly name: string,
     public readonly type: string,      
     public readonly category: MoveCategory,
