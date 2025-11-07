@@ -9,13 +9,13 @@ export class Pokemon {
     public level: number,
     public name: string,
     public type: PokemonType, 
-    public currentHP: number,
-    public totalHP: number,
-    public baseAttack: number,
-    public baseDefense: number,
-    public baseSpecialAttack: number,
-    public baseSpecialDefense: number,
-    public baseSpeed: number,
+    public currentHp: number,
+    public totalHp: number,
+    public attack: number,
+    public defense: number,
+    public specialAttack: number,
+    public specialDefense: number,
+    public speed: number,
     public moves: Move[] = [],
   ) {}
 
@@ -33,7 +33,7 @@ export class Pokemon {
       specialAttack,
       specialDefense,
       speed,
-      moves
+      moves = [],
     } = object;
 
     if (!id) throw 'Pokemon id is required';

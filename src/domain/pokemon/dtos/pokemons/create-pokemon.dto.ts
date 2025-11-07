@@ -23,7 +23,7 @@ export class CreatePokemonDto {
       name, level, type,
       currentHp, totalHp,
       attack, defense, specialAttack, specialDefense, speed,
-      moves
+      moves = []
     } = props;
 
     // Required validations
@@ -33,8 +33,13 @@ export class CreatePokemonDto {
     if (isNaN(level) || level <= 0) return ['level must be a positive number'];
     if (isNaN(totalHp) || totalHp <= 0) return ['totalHp must be a positive number'];
 
-    if (isNaN(currentHp) || currentHp < 0 || currentHp > totalHp)
-      return ['currentHp must be between 0 and totalHp'];
+    
+    const normalizedCurrentHp = currentHp ?? totalHp;
+    if (normalizedCurrentHp < 0 || normalizedCurrentHp > totalHp)
+    return ['currentHp must be between 0 and totalHp'];
+
+    if (!Array.isArray(moves))
+    return ["moves must be an array"];
 
     const stats = [
       ['attack', attack],
@@ -49,24 +54,6 @@ export class CreatePokemonDto {
         return [`${statName} must be a non-negative number`];
     }
 
-    // Moves validation
-    if (!Array.isArray(moves)) return ['moves must be an array'];
-    if (moves.length > 4) return ['moves cannot exceed 4'];
-
-    
-    const parsedMoves = moves.map((m: any) =>
-      new Move(
-        Number(m.id),
-        m.name,
-        m.type,
-        m.category,
-        Number(m.power),
-        Number(m.accuracy ?? 100),
-        Number(m.pp ?? 5),
-        m.effect ?? '',
-        m.probability !== undefined ? Number(m.probability) : null
-      )
-    );
 
     return [
       undefined,
@@ -74,14 +61,14 @@ export class CreatePokemonDto {
         name,
         Number(level),
         type,
-        Number(currentHp),
+        Number(normalizedCurrentHp),
         Number(totalHp),
         Number(attack),
         Number(defense),
         Number(specialAttack),
         Number(specialDefense),
         Number(speed),
-        parsedMoves,
+        moves,
       ),
     ];
   }

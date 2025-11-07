@@ -3,6 +3,7 @@ import { PokemonDatasource } from "../../../domain/pokemon/datasource/pokemon.da
 import { CreatePokemonDto, UpdatePokemonDto } from "../../../domain/pokemon/dtos";
 import { AssignMovesToPokemonDto } from "../../../domain/pokemon/dtos/pokemons/assingn-moves-to-pokemon.dto";
 import { Pokemon } from "../../../domain/pokemon/entities/pokemon.entity";
+import { Move } from '../../../domain/move/entities/move.entity';
 
 
 
@@ -44,15 +45,10 @@ export class PostgresPokemonDatasource implements PokemonDatasource {
 
     async create(createPokemonDto: CreatePokemonDto): Promise<Pokemon> {
 
-        const {moves, ...pokemonData} = createPokemonDto;
-        
+        const{moves, ...pokemonData} = createPokemonDto;
+
         const pokemon = await prisma.pokemon.create({
-            data: {
-                ...createPokemonDto,
-                moves: {
-                    create: moves.map(m => ({moveId: m.id}) )
-                }
-            }
+            data: pokemonData,
         });
 
         return Pokemon.fromObject(pokemon);
