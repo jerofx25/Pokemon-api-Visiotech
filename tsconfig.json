@@ -1,0 +1,34 @@
+{
+  "exclude": ["node_modules", "src/**/*.test.ts"],
+  "include": ["src", "node_modules/.prisma/client"],
+  "compilerOptions": {
+    // Archivos
+    "rootDir": "src",
+    "outDir": "dist",
+
+    // Módulos y entorno Node
+    "module": "nodenext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2020",
+    "lib": ["ESNext"],
+
+    // Generación de archivos auxiliares
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    // Verificación estricta
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+
+    // ESM estricto
+    "verbatimModuleSyntax": false,
+    "isolatedModules": true,
+    "noUncheckedSideEffectImports": true,
+    "moduleDetection": "force"
+  }
+}
+

@@ -1,0 +1,60 @@
+{
+
+  "name": "test-pokemon-api",
+
+  "version": "1.0.0",
+
+  "description": "",
+
+  "main": "app.js",
+
+  "type": "commonjs",
+
+  "scripts": {
+
+    "dev": "tsnd --respawn --clear src/app.ts",
+
+    "build": "rimraf dist && tsc",
+
+    "start": "node dist/app.js",
+
+    "prisma:generate": "npx prisma generate",
+
+    "prisma:migrate:dev": "npx prisma migrate dev --name init",
+
+    "prisma:migrate:prod": "npx prisma migrate deploy",
+
+    "postinstall": "npm run prisma:generate"
+
+  },
+
+  "devDependencies": {
+
+    "@types/node": "^24.10.0",
+
+    "rimraf": "^6.1.0",
+
+    "ts-node-dev": "^2.0.0",
+
+    "typescript": "^5.9.3"
+
+  },
+
+  "dependencies": {
+
+    "@prisma/client": "^6.19.0",
+
+    "@types/express": "^5.0.5",
+
+    "dotenv": "^17.2.3",
+
+    "env-var": "^7.5.0",
+
+    "express": "^5.1.0",
+
+    "prisma": "^6.19.0"
+
+  }
+
+}
+
