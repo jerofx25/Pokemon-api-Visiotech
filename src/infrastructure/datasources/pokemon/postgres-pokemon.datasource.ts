@@ -1,11 +1,46 @@
 import { prisma } from "../../../data/postgres";
 import { PokemonDatasource } from "../../../domain/pokemon/datasource/pokemon.datasource";
 import { CreatePokemonDto, UpdatePokemonDto } from "../../../domain/pokemon/dtos";
+import { AssignMovesToPokemonDto } from "../../../domain/pokemon/dtos/pokemons/assingn-moves-to-pokemon.dto";
 import { Pokemon } from "../../../domain/pokemon/entities/pokemon.entity";
 
 
 
 export class PostgresPokemonDatasource implements PokemonDatasource {
+
+    async assingMoves(assingMovesToPokemonDto: AssignMovesToPokemonDto): Promise<Pokemon> {
+
+    const pokemon = await prisma.pokemon.findUnique({ where: { id: assingMovesToPokemonDto.pokemonId }});
+    if (!pokemon) throw new Error(`Pokemon with id ${assingMovesToPokemonDto.pokemonId} not found`);
+
+    const moves = await prisma.move.findMany({
+      where: { id: { in: assingMovesToPokemonDto.moveIds }}
+    });
+    if (moves.length !== assingMovesToPokemonDto.moveIds.length) {
+      throw new Error(`Some moves do not exist`);
+    }
+
+    const current = await prisma.pokemonMove.count({
+      where: { pokemonId: assingMovesToPokemonDto.pokemonId }
+    });
+    if (current + assingMovesToPokemonDto.moveIds.length > 4) {
+      throw new Error(`Pokemon can only have 4 moves`);
+    }
+
+    await prisma.pokemonMove.createMany({
+      data: assingMovesToPokemonDto.moveIds.map(moveId => ({
+        pokemonId: assingMovesToPokemonDto.pokemonId,
+        moveId
+      }))
+    });
+
+    const updated = await prisma.pokemon.findUnique({
+      where: { id: assingMovesToPokemonDto.pokemonId },
+      include: { moves: { include: { move: true }}}
+    });
+
+    return Pokemon.fromObject(updated!);
+    }
 
     async create(createPokemonDto: CreatePokemonDto): Promise<Pokemon> {
 
