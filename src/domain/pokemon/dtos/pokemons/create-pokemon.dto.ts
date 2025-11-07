@@ -1,56 +1,80 @@
+import { Move } from "../../entities/move.entity";
 
 
 export class CreatePokemonDto {
 
   private constructor(
-    public readonly level: number,
     public readonly name: string,
-    public readonly types: string[],
-    public readonly currentHP: number,
-    public readonly totalHP: number,
-    public readonly baseAttack: number,
-    public readonly baseDefense: number,
-    public readonly baseSpecialAttack: number,
-    public readonly baseSpecialDefense: number,
-    public readonly baseSpeed: number,
-    public readonly moves: string[],
+    public readonly level: number,
+    public readonly type: string,
+    public readonly currentHp: number,
+    public readonly totalHp: number,
+    public readonly attack: number,
+    public readonly defense: number,
+    public readonly specialAttack: number,
+    public readonly specialDefense: number,
+    public readonly speed: number,
+    public readonly moves: Move[],
   ) {}
 
-  static create(props: { [key: string]: any }): [string | undefined, CreatePokemonDto | undefined] {
+  static create(props: { [key: string]: any }): [string | undefined, CreatePokemonDto?] {
 
     const {
-      level,
-      name,
-      types,
-      currentHP,
-      totalHP,
-      baseAttack,
-      baseDefense,
-      baseSpecialAttack,
-      baseSpecialDefense,
-      baseSpeed,
+      name, level, type,
+      currentHp, totalHp,
+      attack, defense, specialAttack, specialDefense, speed,
       moves
     } = props;
 
-    if (!name) return ["Name is required", undefined];
-    if (!level) return ["Level is required", undefined];
-    if (!types || !Array.isArray(types)) return ["Types must be an array of strings", undefined];
-    if (!moves || !Array.isArray(moves)) return ["Moves must be an array of strings", undefined];
-    if (moves.length > 4) return ["A Pokémon can only know up to 4 moves", undefined];
-    if (currentHP > totalHP) return ["Current HP cannot exceed Total HP", undefined];
+    // Required string fields
+    if (!name) return ['name is required'];
+    if (!type) return ['type is required'];
 
-    return [undefined, new CreatePokemonDto(
-      Number(level),
-      String(name),
-      types.map(String),
-      Number(currentHP),
-      Number(totalHP),
-      Number(baseAttack),
-      Number(baseDefense),
-      Number(baseSpecialAttack),
-      Number(baseSpecialDefense),
-      Number(baseSpeed),
-      moves.map(String),
-    )];
+    // Required numeric fields
+    if (isNaN(level) || level <= 0) return ['level must be a positive number'];
+    if (isNaN(totalHp) || totalHp <= 0) return ['totalHp must be a positive number'];
+    if (isNaN(currentHp) || currentHp < 0 || currentHp > totalHp)
+      return ['currentHp must be between 0 and totalHp'];
+
+    const stats = [
+      ['attack', attack],
+      ['defense', defense],
+      ['specialAttack', specialAttack],
+      ['specialDefense', specialDefense],
+      ['speed', speed],
+    ];
+
+    for (const [statName, statValue] of stats) {
+      if (isNaN(statValue) || statValue < 0)
+        return [`${statName} must be a non-negative number`];
+    }
+
+    // Moves validation
+    if (!Array.isArray(moves)) return ['moves must be an array'];
+    if (moves.length > 4) return ['moves cannot exceed 4'];
+
+    const parsedMoves = moves.map((m: any) => {
+      if (!m.name || isNaN(m.power)) {
+        throw new Error('Each move must have name and numeric power');
+      }
+      return new Move(m.name, Number(m.power));
+    });
+
+    return [
+      undefined,
+      new CreatePokemonDto(
+        name,
+        Number(level),
+        type,
+        Number(currentHp),
+        Number(totalHp),
+        Number(attack),
+        Number(defense),
+        Number(specialAttack),
+        Number(specialDefense),
+        Number(speed),
+        parsedMoves,
+      ),
+    ];
   }
 }
