@@ -1,7 +1,8 @@
-import { CreatePokemonDto, UpdatePokemonDto } from "../dtos";
-import { Pokemon } from "../entities/pokemon.entity";
 
-export abstract class PokemonRepository {
+import { CreatePokemonDto, UpdatePokemonDto } from '../dtos';
+import { Pokemon } from '../entities/pokemon.entity';
+
+export abstract class PokemonDatasource {
 
   abstract create(createPokemonDto: CreatePokemonDto): Promise<Pokemon>;
 
