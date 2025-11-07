@@ -18,7 +18,7 @@ export class UpdatePokemonDto {
   ) {}
 
   get values() {
-    const updatedFields: any = {};
+    const updatedFields: { [key: string]: any } = {};
 
     if (this.name !== undefined) updatedFields.name = this.name;
     if (this.level !== undefined) updatedFields.level = this.level;

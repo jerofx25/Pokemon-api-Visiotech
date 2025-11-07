@@ -8,7 +8,7 @@ export interface UpdateTodoUseCase {
 }
 
 
-export class UpdateTodo implements UpdateTodoUseCase {
+export class UpdatePokemon implements UpdateTodoUseCase {
   
   constructor(
     private readonly repository: PokemonRepository,

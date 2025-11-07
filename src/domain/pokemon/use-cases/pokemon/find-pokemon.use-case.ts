@@ -8,7 +8,7 @@ export interface GetTodoUseCase {
 }
 
 
-export class GetTodo implements GetTodoUseCase {
+export class GetPokemon implements GetTodoUseCase {
   
   constructor(
     private readonly repository: PokemonRepository,

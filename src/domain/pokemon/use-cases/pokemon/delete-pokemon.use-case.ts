@@ -2,12 +2,12 @@ import { Pokemon } from "../../entities/pokemon.entity";
 import { PokemonRepository } from "../../repository/pokemon.repository";
 
 
-export interface DeleteTodoUseCase {
+export interface DeletePokemonUseCase {
   execute( id: number ): Promise<Pokemon>
 }
 
 
-export class DeleteTodo implements DeleteTodoUseCase {
+export class DeletePokemon implements DeletePokemonUseCase {
   
   constructor(
     private readonly repository: PokemonRepository,
