@@ -1,4 +1,4 @@
-import { Move } from "./move.entity";
+import { Move } from "../../move/entities/move.entity";
 
 
 export class Pokemon {

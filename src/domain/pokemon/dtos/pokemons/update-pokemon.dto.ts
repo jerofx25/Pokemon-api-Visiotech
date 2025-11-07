@@ -1,5 +1,4 @@
-import { Move } from "../../entities/move.entity";
-
+import { Move } from "../../../move/entities/move.entity";
 
 export class UpdatePokemonDto {
 
@@ -19,30 +18,52 @@ export class UpdatePokemonDto {
   ) {}
 
   get values() {
-    const v: Record<string, any> = {};
-    for (const key in this) {
-      if (this[key as keyof this] !== undefined && key !== "id") {
-        v[key] = this[key as keyof this];
-      }
-    }
-    return v;
+    const updatedFields: any = {};
+
+    if (this.name !== undefined) updatedFields.name = this.name;
+    if (this.level !== undefined) updatedFields.level = this.level;
+    if (this.type !== undefined) updatedFields.type = this.type;
+    if (this.currentHp !== undefined) updatedFields.currentHp = this.currentHp;
+    if (this.totalHp !== undefined) updatedFields.totalHp = this.totalHp;
+    if (this.attack !== undefined) updatedFields.attack = this.attack;
+    if (this.defense !== undefined) updatedFields.defense = this.defense;
+    if (this.specialAttack !== undefined) updatedFields.specialAttack = this.specialAttack;
+    if (this.specialDefense !== undefined) updatedFields.specialDefense = this.specialDefense;
+    if (this.speed !== undefined) updatedFields.speed = this.speed;
+    if (this.moves !== undefined) updatedFields.moves = this.moves;
+
+    return updatedFields;
   }
 
   static create(props: { [key: string]: any }): [string | undefined, UpdatePokemonDto?] {
-
+    
     const { id, moves, ...rest } = props;
 
+    // Validate ID
     if (!id || isNaN(Number(id))) {
       return ['id must be a valid number'];
     }
 
-    if (moves && Array.isArray(moves) && moves.length > 4) {
-      return ['moves cannot exceed 4'];
-    }
+    // Validate and parse moves if provided
+    let parsedMoves: Move[] | undefined = undefined;
 
-    let parsedMoves: Move[] | undefined;
-    if (moves) {
-      parsedMoves = moves.map((m: any) => new Move(m.name, Number(m.power)));
+    if (moves !== undefined) {
+
+      if (!Array.isArray(moves)) return ['moves must be an array'];
+      if (moves.length > 4) return ['moves cannot exceed 4'];
+
+      parsedMoves = moves.map((m: any) =>
+        new Move(
+          m.name,
+          m.type,
+          m.category,
+          Number(m.power),
+          Number(m.accuracy ?? 100),
+          Number(m.pp ?? 5),
+          m.effect ?? '',
+          m.probability !== undefined ? Number(m.probability) : null
+        )
+      );
     }
 
     return [
@@ -50,17 +71,17 @@ export class UpdatePokemonDto {
       new UpdatePokemonDto(
         Number(id),
         rest.name,
-        rest.level ? Number(rest.level) : undefined,
+        rest.level !== undefined ? Number(rest.level) : undefined,
         rest.type,
-        rest.currentHp ? Number(rest.currentHp) : undefined,
-        rest.totalHp ? Number(rest.totalHp) : undefined,
-        rest.attack ? Number(rest.attack) : undefined,
-        rest.defense ? Number(rest.defense) : undefined,
-        rest.specialAttack ? Number(rest.specialAttack) : undefined,
-        rest.specialDefense ? Number(rest.specialDefense) : undefined,
-        rest.speed ? Number(rest.speed) : undefined,
-        parsedMoves,
-      ),
+        rest.currentHp !== undefined ? Number(rest.currentHp) : undefined,
+        rest.totalHp !== undefined ? Number(rest.totalHp) : undefined,
+        rest.attack !== undefined ? Number(rest.attack) : undefined,
+        rest.defense !== undefined ? Number(rest.defense) : undefined,
+        rest.specialAttack !== undefined ? Number(rest.specialAttack) : undefined,
+        rest.specialDefense !== undefined ? Number(rest.specialDefense) : undefined,
+        rest.speed !== undefined ? Number(rest.speed) : undefined,
+        parsedMoves
+      )
     ];
   }
 }

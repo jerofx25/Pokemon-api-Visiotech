@@ -1,5 +1,4 @@
-import { Move } from "../../entities/move.entity";
-
+import { Move } from "../../../move/entities/move.entity";
 
 export class CreatePokemonDto {
 
@@ -26,13 +25,13 @@ export class CreatePokemonDto {
       moves
     } = props;
 
-    // Required string fields
+    // Required validations
     if (!name) return ['name is required'];
     if (!type) return ['type is required'];
 
-    // Required numeric fields
     if (isNaN(level) || level <= 0) return ['level must be a positive number'];
     if (isNaN(totalHp) || totalHp <= 0) return ['totalHp must be a positive number'];
+
     if (isNaN(currentHp) || currentHp < 0 || currentHp > totalHp)
       return ['currentHp must be between 0 and totalHp'];
 
@@ -53,12 +52,19 @@ export class CreatePokemonDto {
     if (!Array.isArray(moves)) return ['moves must be an array'];
     if (moves.length > 4) return ['moves cannot exceed 4'];
 
-    const parsedMoves = moves.map((m: any) => {
-      if (!m.name || isNaN(m.power)) {
-        throw new Error('Each move must have name and numeric power');
-      }
-      return new Move(m.name, Number(m.power));
-    });
+    
+    const parsedMoves = moves.map((m: any) =>
+      new Move(
+        m.name,
+        m.type,
+        m.category,
+        Number(m.power),
+        Number(m.accuracy ?? 100),
+        Number(m.pp ?? 5),
+        m.effect ?? '',
+        m.probability !== undefined ? Number(m.probability) : null
+      )
+    );
 
     return [
       undefined,
