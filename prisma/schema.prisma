@@ -12,3 +12,18 @@ datasource db {
   provider = "postgresql"
   url      = env("POSTGRES_URL")
 }
+
+model Pokemon {
+  id                  Int      @id @default(autoincrement())
+  level               Int
+  name                String   @unique
+  types               String[] // Array en PostgreSQL
+  currentHP           Int
+  totalHP             Int
+  baseAttack          Int
+  baseDefense         Int
+  baseSpecialAttack   Int
+  baseSpecialDefense  Int
+  baseSpeed           Int
+  moves               String[]
+}
