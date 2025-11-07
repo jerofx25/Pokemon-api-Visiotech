@@ -14,16 +14,40 @@ datasource db {
 }
 
 model Pokemon {
-  id                  Int      @id @default(autoincrement())
-  level               Int
-  name                String   @unique
-  types               String[] // Array en PostgreSQL
-  currentHP           Int
-  totalHP             Int
-  baseAttack          Int
-  baseDefense         Int
-  baseSpecialAttack   Int
-  baseSpecialDefense  Int
-  baseSpeed           Int
-  moves               String[]
+  id                Int     @id @default(autoincrement())
+  name              String
+  level             Int
+  type              String   
+  currentHp         Int
+  totalHp           Int
+  attack            Int
+  defense           Int
+  specialAttack     Int
+  specialDefense    Int
+  speed             Int
+  moves PokemonMove[]
+}
+
+model Move {
+  id          Int     @id @default(autoincrement())
+  name        String
+  type        String
+  category    String   // 'physical' | 'special' | 'status'
+  power       Int
+  accuracy    Int
+  pp          Int
+  effect      String
+  probability Int?     // can be null
+  pokemon PokemonMove[]
+}
+
+model PokemonMove {
+  id        Int     @id @default(autoincrement())
+  pokemonId Int
+  moveId    Int
+
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+  move    Move    @relation(fields: [moveId], references: [id])
+
+  @@unique([pokemonId, moveId])
 }
