@@ -9,6 +9,8 @@ import { DeletePokemon } from "../../domain/pokemon/use-cases/pokemon/delete-pok
 import { Move } from '../../domain/move/entities/move.entity';
 import { AssignMovesToPokemonDto } from "../../domain/pokemon/dtos/pokemons/assingn-moves-to-pokemon.dto";
 import { AssignMovesToPokemon } from "../../domain/pokemon/use-cases/pokemon/assign-moves-to-pokemon.use-case";
+import { GetPokemonMoves } from "../../domain/pokemon/use-cases/pokemon/get-pokemon-moves.use-case";
+import { error } from "console";
 
 export class PokemonController {
 
@@ -85,4 +87,13 @@ export class PokemonController {
             .catch(error => res.status(400).json({ error: error instanceof Error ? error.message : String(error) }));
     };
 
+    public getPokemonMoves = (req: Request, res: Response) => {
+
+        const id = +req.params.id!;
+
+        new GetPokemonMoves(this.pokemonRepository)
+            .execute(id)
+            .then(moves => res.json(moves))
+            .catch(error => res.status(400).json({ error }));
+    };
 }
