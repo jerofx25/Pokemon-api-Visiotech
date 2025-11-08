@@ -12,6 +12,8 @@ export class BattleTurn {
     public readonly defender: Pokemon,
     public readonly move: Move,
     public readonly damage: number,
+    public readonly hit: boolean,
+    public readonly message: string
   ) {}
 
   static fromObject(object: { [key: string]: any }): BattleTurn {
@@ -24,7 +26,9 @@ export class BattleTurn {
       move, 
       damage, 
       defenderHpAfter,
-      attackerHpAfter
+      attackerHpAfter,
+      hit,
+      message
     } = object;
 
     if (!id) throw 'Turn id is required';
@@ -41,7 +45,9 @@ export class BattleTurn {
       attackerEntity,
       defenderEntity,
       Move.fromObject(move),
-      Number(damage)
+      Number(damage),
+      hit,
+      message
     );
   }
 }

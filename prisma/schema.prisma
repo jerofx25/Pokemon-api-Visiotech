@@ -80,6 +80,7 @@ model PokemonMove {
   id        Int @id @default(autoincrement())
   pokemonId Int
   moveId    Int
+  pp        Int?
 
   pokemon Pokemon @relation(fields: [pokemonId], references: [id])
   move    Move    @relation(fields: [moveId], references: [id])
@@ -117,7 +118,9 @@ model BattleTurn {
   randomRoll      Int
   defenderHpAfter Int
   attackerHpAfter Int?
+  hit           Boolean? @default(true)
   createdAt       DateTime @default(now())
+  message        String @default("")
 
   battle   Battle  @relation(fields: [battleId], references: [id])
   attacker Pokemon @relation("TurnAttacker", fields: [attackerId], references: [id])

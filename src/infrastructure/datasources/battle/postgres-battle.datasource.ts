@@ -1,7 +1,8 @@
 import { BattleDatasource } from "../../../domain/battle/datasource/battle.datasource";
-import { BattleTurn } from "../../../domain/battle/entities/battle-turn.entity";
 import { Battle } from "../../../domain/battle/entities/battle.entity";
 import { prisma } from "../../../data/postgres";
+import { typeEffectiveness } from "../../../domain/battle/effectiveness";
+import e from "express";
 
 
 
@@ -42,6 +43,7 @@ export class PostgresBattleDatasource implements BattleDatasource{
                 pokemonA: { include: { moves: { include: { move: true } } } },
                 pokemonB: { include: { moves: { include: { move: true } } } },
                 turns: {
+                    orderBy: { turnNumber: 'asc' },
                     include: {
                         attacker: { include: { moves: { include: { move: true } } } },
                         defender: { include: { moves: { include: { move: true } } } },
@@ -72,34 +74,63 @@ export class PostgresBattleDatasource implements BattleDatasource{
         const move = await prisma.move.findUnique({ where: { id: moveId }});
 
         if (!attacker || !defender || !move)
-        throw new Error("Invalid turn data");
+            throw new Error("Invalid turn data");
 
-        const rawDamage = attacker.attack * move.power / defender.defense;
-        const randomRoll = Math.floor(Math.random() * 10);
-        const damage = Math.max(1, Math.floor(rawDamage + randomRoll));
 
-        const newHp = attackerIsA ? battle.hpB - damage : battle.hpA - damage;
+        const pokemonMove = await prisma.pokemonMove.findFirst({
+            where: { pokemonId: attackerId, moveId }
+        });
 
+        if (!pokemonMove) throw new Error("This Pokémon does not know that move");
+        if (pokemonMove.pp! <= 0) throw new Error("No PP left for that move");
+
+        await prisma.pokemonMove.update({
+            where: { id: pokemonMove.id },
+            data: { pp: { decrement: 1 } }
+        });
+
+        const hitChance = move.accuracy ?? 100;
+        const hitRoll = Math.random() * 100;
+
+        const moveHits = hitRoll <= hitChance;
+
+        let finalDamage = 0;
+        let effectiveness = 1;
+
+        if (moveHits) {
+
+            const attackStat = move.category === "special" ? attacker.specialAttack : attacker.attack;
+            const defenseStat = move.category === "special" ? defender.specialDefense : defender.defense;
+
+            const stab = attacker.type === move.type ? 1.5 : 1;
+
+            effectiveness = typeEffectiveness[move.type]?.[defender.type] ?? 1;
+
+            const randomFactor = (Math.floor(Math.random() * 16) + 85) / 100; 
+
+            const baseDamage =
+                (((2 * attacker.level / 5 + 2) * attackStat * move.power) / defenseStat) / 50 + 2;
+
+            finalDamage = Math.max(1, Math.floor(baseDamage * stab * effectiveness * randomFactor));
+
+            if(effectiveness === 0) finalDamage = 0;
+            
+        }
+
+        finalDamage = Math.max(0, finalDamage);
+
+        const newHp = attackerIsA ? battle.hpB - finalDamage : battle.hpA - finalDamage;
         const defenderHpAfter = Math.max(0, newHp);
         const attackerHpAfter = attackerIsA ? battle.hpA : battle.hpB;
 
-        if(defenderHpAfter <= 0){
-            await prisma.battleTurn.create({
-                data: {
-                    battleId,
-                    turnNumber: battle.turn,
-                    attackerId,
-                    defenderId,
-                    moveId,
-                    damage,
-                    effectiveness: 1,
-                    randomRoll,
-                    defenderHpAfter,
-                    attackerHpAfter
-                }
-            });
+        let message = `${attacker.name} used ${move.name}! `;
 
-            return this.finishBattle(battleId, attackerId);
+        if (!moveHits) {
+            message += "But it missed!";
+        }else{
+            if (effectiveness > 1) message += "It's super effective! ";
+            else if (effectiveness < 1 && effectiveness > 0) message += "It's not very effective... ";
+            else if (effectiveness === 0) message += "It had no effect... ";
         }
 
         await prisma.battleTurn.create({
@@ -109,15 +140,21 @@ export class PostgresBattleDatasource implements BattleDatasource{
                 attackerId,
                 defenderId,
                 moveId,
-                damage,
-                effectiveness: 1,
-                randomRoll,
+                damage: finalDamage,
+                effectiveness,
+                randomRoll: Math.floor((Math.random() * 16) + 85),
                 defenderHpAfter,
-                attackerHpAfter
+                attackerHpAfter,
+                hit: moveHits,
+                message: message
             }
         });
 
-    
+        if (defenderHpAfter <= 0) {
+            return this.finishBattle(battleId, attackerId);
+        }
+
+  
         await prisma.battle.update({
             where: { id: battleId },
             data: {
@@ -128,7 +165,6 @@ export class PostgresBattleDatasource implements BattleDatasource{
             }
         });
 
-        
         return this.getBattle(battleId);
     };
 
@@ -147,5 +183,4 @@ export class PostgresBattleDatasource implements BattleDatasource{
         return Battle.fromObject(battle);
 
     };
-  
 }

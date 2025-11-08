@@ -1,3 +1,4 @@
+import e from "express";
 import { Move } from "../../move/entities/move.entity";
 import { PokemonType } from "../../shared/enums/pokemon-type.enum";
 
@@ -52,9 +53,17 @@ export class Pokemon {
       Number(specialAttack),
       Number(specialDefense),
       Number(speed),
-      Array.isArray(moves)
-        ? moves.map(m => Move.fromObject(m.move ?? m)) // admite include y raw
-        : []
+      moves.map((pm: any) => ({
+        id: pm.move.id,
+        name: pm.move.name,
+        type: pm.move.type,
+        category: pm.move.category,
+        power: Number(pm.move.power),
+        accuracy: Number(pm.move.accuracy),
+        pp: Number(pm.pp), 
+        effect: pm.move.effect,
+        probability: pm.move.probability ? Number(pm.move.probability) : undefined,
+      })),
     );
   }
 }

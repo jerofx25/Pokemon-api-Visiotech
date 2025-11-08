@@ -44,6 +44,10 @@ export class BattleController {
         new ExecuteTurn(this.battleRepository, this.pokemonRepository)
             .execute(dto!)
             .then(battle => res.json(battle))  
-            .catch(error => res.status(400).json({ error }));
+            .catch(error => {
+                console.error(error);
+                
+                res.status(400).json({ error })
+            });
     };
 }

@@ -34,27 +34,28 @@ export class PostgresPokemonDatasource implements PokemonDatasource {
 
     async assingMoves(assingMovesToPokemonDto: AssignMovesToPokemonDto): Promise<Pokemon> {
 
-    const pokemon = await prisma.pokemon.findUnique({ where: { id: assingMovesToPokemonDto.pokemonId }});
-    if (!pokemon) throw new Error(`Pokemon with id ${assingMovesToPokemonDto.pokemonId} not found`);
+      const pokemon = await prisma.pokemon.findUnique({ where: { id: assingMovesToPokemonDto.pokemonId }});
+      if (!pokemon) throw new Error(`Pokemon with id ${assingMovesToPokemonDto.pokemonId} not found`);
 
-    const moves = await prisma.move.findMany({
-      where: { id: { in: assingMovesToPokemonDto.moveIds }}
-    });
-    if (moves.length !== assingMovesToPokemonDto.moveIds.length) {
-      throw new Error(`Some moves do not exist`);
-    }
+      const moves = await prisma.move.findMany({
+        where: { id: { in: assingMovesToPokemonDto.moveIds }}
+      });
+      if (moves.length !== assingMovesToPokemonDto.moveIds.length) {
+        throw new Error(`Some moves do not exist`);
+      }
 
-    const current = await prisma.pokemonMove.count({
-      where: { pokemonId: assingMovesToPokemonDto.pokemonId }
-    });
-    if (current + assingMovesToPokemonDto.moveIds.length > 4) {
-      throw new Error(`Pokemon can only have 4 moves`);
-    }
+      const current = await prisma.pokemonMove.count({
+        where: { pokemonId: assingMovesToPokemonDto.pokemonId }
+      });
+      if (current + assingMovesToPokemonDto.moveIds.length > 4) {
+        throw new Error(`Pokemon can only have 4 moves`);
+      }
 
     await prisma.pokemonMove.createMany({
-      data: assingMovesToPokemonDto.moveIds.map(moveId => ({
+      data: moves.map(move => ({
         pokemonId: assingMovesToPokemonDto.pokemonId,
-        moveId
+        moveId: move.id,
+        pp: move.pp 
       }))
     });
 
@@ -63,87 +64,87 @@ export class PostgresPokemonDatasource implements PokemonDatasource {
       include: { moves: { include: { move: true }}}
     });
 
-    return Pokemon.fromObject(updated!);
+      return Pokemon.fromObject(updated!);
     }
 
     async create(createPokemonDto: CreatePokemonDto): Promise<Pokemon> {
 
-        const{moveIds, ...pokemonData} = createPokemonDto;
+      const{moveIds, ...pokemonData} = createPokemonDto;
 
-        const pokemon = await prisma.pokemon.create({
-            data: pokemonData,
+      const pokemon = await prisma.pokemon.create({
+          data: pokemonData,
+      });
+
+      if (moveIds.length > 0) {
+        await prisma.pokemonMove.createMany({
+          data: moveIds.map(moveId => ({
+            pokemonId: pokemon.id,
+            moveId
+          }))
         });
+      }
 
-        if (moveIds.length > 0) {
-          await prisma.pokemonMove.createMany({
-            data: moveIds.map(moveId => ({
-              pokemonId: pokemon.id,
-              moveId
-            }))
-          });
-        }
-
-        const createdPokemon = await prisma.pokemon.findUnique({
-          where: { id: pokemon.id },
-          include: { moves: { include: { move: true } } }
-        });
+      const createdPokemon = await prisma.pokemon.findUnique({
+        where: { id: pokemon.id },
+        include: { moves: { include: { move: true } } }
+      });
 
         return Pokemon.fromObject(createdPokemon!);
     };
 
     async findAll(): Promise<Pokemon[]> {
         
-        const pokemons =  await prisma.pokemon.findMany({
-            include: {
-                moves: {
-                    include: {
-                        move: true
-                    }
-                }
-            }
-        });
+      const pokemons =  await prisma.pokemon.findMany({
+          include: {
+              moves: {
+                  include: {
+                      move: true
+                  }
+              }
+          }
+      });
 
-        return pokemons.map(Pokemon.fromObject);
+      return pokemons.map(Pokemon.fromObject);
     }
 
     async findById(id: number): Promise<Pokemon> {
         
-        const pokemon = await prisma.pokemon.findFirst({
-            where: { id },
-            include: { moves: { include: { move: true } } }
-        });
+      const pokemon = await prisma.pokemon.findFirst({
+          where: { id },
+          include: { moves: { include: { move: true } } }
+      });
 
-        if (!pokemon) throw new Error(`Pokemon with id ${id} not found`);
+      if (!pokemon) throw new Error(`Pokemon with id ${id} not found`);
 
-        return Pokemon.fromObject(pokemon);
+      return Pokemon.fromObject(pokemon);
 
-    }
+  }
 
     async updateById(updatePokemonDto: UpdatePokemonDto): Promise<Pokemon> {
         
-        const { id, moves, ...data } = updatePokemonDto.values;
+      const { id, moves, ...data } = updatePokemonDto.values;
 
-        await this.findById(updatePokemonDto.id);
+      await this.findById(updatePokemonDto.id);
 
-        const updated = await prisma.pokemon.update({
-            where: { id: updatePokemonDto.id },
-            data: { ...data },
-            include: { moves: { include: { move: true } } }
-        });
+      const updated = await prisma.pokemon.update({
+          where: { id: updatePokemonDto.id },
+          data: { ...data },
+          include: { moves: { include: { move: true } } }
+      });
 
-        return Pokemon.fromObject(updated);
+      return Pokemon.fromObject(updated);
     }
 
     async deleteById(id: number): Promise<Pokemon> {
         
-        await this.findById(id);
+      await this.findById(id);
 
-        const deleted = await prisma.pokemon.delete({
-            where: { id },
-            include: { moves: { include: { move: true } } }
-        });
+      const deleted = await prisma.pokemon.delete({
+          where: { id },
+          include: { moves: { include: { move: true } } }
+      });
 
-        return Pokemon.fromObject(deleted);
+      return Pokemon.fromObject(deleted);
     }
 
 }
