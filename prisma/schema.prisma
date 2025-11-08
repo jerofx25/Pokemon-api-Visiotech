@@ -41,22 +41,28 @@ enum MoveCategory {
 }
 
 model Pokemon {
-  id              Int          @id @default(autoincrement())
-  name            String
-  level           Int
-  type            PokemonType
-  currentHp       Int
-  totalHp         Int
-  attack          Int
-  defense         Int
-  specialAttack   Int
-  specialDefense  Int
-  speed           Int
-  moves           PokemonMove[]
+  id             Int           @id @default(autoincrement())
+  name           String
+  level          Int
+  type           PokemonType
+  currentHp      Int
+  totalHp        Int
+  attack         Int
+  defense        Int
+  specialAttack  Int
+  specialDefense Int
+  speed          Int
+  moves          PokemonMove[]
+
+  battlesAsA Battle[] @relation("BattlePokemonA")
+  battlesAsB Battle[] @relation("BattlePokemonB")
+
+  turnsAsAttacker BattleTurn[] @relation("TurnAttacker")
+  turnsAsDefender BattleTurn[] @relation("TurnDefender")
 }
 
 model Move {
-  id          Int          @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   name        String
   type        PokemonType
   category    MoveCategory
@@ -66,10 +72,12 @@ model Move {
   effect      String
   probability Int?
   pokemon     PokemonMove[]
+
+  turns BattleTurn[]
 }
 
 model PokemonMove {
-  id        Int     @id @default(autoincrement())
+  id        Int @id @default(autoincrement())
   pokemonId Int
   moveId    Int
 
@@ -77,4 +85,47 @@ model PokemonMove {
   move    Move    @relation(fields: [moveId], references: [id])
 
   @@unique([pokemonId, moveId])
+}
+
+model Battle {
+  id                Int          @id @default(autoincrement())
+  pokemonAId        Int
+  pokemonBId        Int
+  hpA               Int
+  hpB               Int
+  turn              Int          @default(1)
+  currentAttackerId Int
+  status            BattleStatus @default(in_progress)
+  winnerId          Int?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  pokemonA Pokemon      @relation("BattlePokemonA", fields: [pokemonAId], references: [id])
+  pokemonB Pokemon      @relation("BattlePokemonB", fields: [pokemonBId], references: [id])
+  turns    BattleTurn[]
+}
+
+model BattleTurn {
+  id              Int      @id @default(autoincrement())
+  battleId        Int
+  turnNumber      Int
+  attackerId      Int
+  defenderId      Int
+  moveId          Int
+  damage          Int
+  effectiveness   Float
+  randomRoll      Int
+  defenderHpAfter Int
+  createdAt       DateTime @default(now())
+
+  battle   Battle  @relation(fields: [battleId], references: [id])
+  attacker Pokemon @relation("TurnAttacker", fields: [attackerId], references: [id])
+  defender Pokemon @relation("TurnDefender", fields: [defenderId], references: [id])
+  move     Move    @relation(fields: [moveId], references: [id])
+}
+
+enum BattleStatus {
+  pending
+  in_progress
+  finished
 }
