@@ -16,15 +16,30 @@ export class BattleTurn {
 
   static fromObject(object: { [key: string]: any }): BattleTurn {
 
-    const { id, turnNumber, attacker, defender, move, damage } = object;
+    const { 
+      id, 
+      turnNumber, 
+      attacker, 
+      defender, 
+      move, 
+      damage, 
+      defenderHpAfter,
+      attackerHpAfter
+    } = object;
 
     if (!id) throw 'Turn id is required';
+
+    const attackerEntity = Pokemon.fromObject(attacker);
+    const defenderEntity = Pokemon.fromObject(defender);
+
+    attackerEntity.currentHp = attackerHpAfter ?? attackerEntity.currentHp;
+    defenderEntity.currentHp = defenderHpAfter;
 
     return new BattleTurn(
       id,
       turnNumber,
-      Pokemon.fromObject(attacker),
-      Pokemon.fromObject(defender),
+      attackerEntity,
+      defenderEntity,
       Move.fromObject(move),
       Number(damage)
     );

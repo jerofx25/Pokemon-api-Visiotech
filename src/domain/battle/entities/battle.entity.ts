@@ -23,17 +23,25 @@ export class Battle {
       pokemonB,
       status,
       winnerId,
-      turns = []
+      turns = [],
+      hpA,
+      hpB
     } = object;
 
     if (!id) throw 'Battle id is required';
     if (!pokemonA) throw 'pokemonA is required';
     if (!pokemonB) throw 'pokemonB is required';
 
+    const pokemonAEntity = Pokemon.fromObject(pokemonA);
+    const pokemonBEntity = Pokemon.fromObject(pokemonB);
+
+    pokemonAEntity.currentHp = hpA;
+    pokemonBEntity.currentHp = hpB;
+
     return new Battle(
       id,
-      Pokemon.fromObject(pokemonA),
-      Pokemon.fromObject(pokemonB),
+      pokemonAEntity,
+      pokemonBEntity,
       status,
       winnerId,
       Array.isArray(turns)

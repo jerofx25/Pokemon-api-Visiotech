@@ -8,7 +8,7 @@ export abstract class BattleRepository {
 
   abstract getBattle(battleId: number): Promise<Battle>;
 
-  abstract recordTurn(battleId: number, attackerId: number, moveId: number): Promise<BattleTurn>;
+  abstract recordTurn(battleId: number, attackerId: number, moveId: number): Promise<Battle>;
 
   abstract finishBattle(battleId: number, winnerId: number): Promise<Battle>;
 }

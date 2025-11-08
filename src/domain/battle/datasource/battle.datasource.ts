@@ -1,7 +1,6 @@
 
 
 import { Battle } from "../entities/battle.entity";
-import { BattleTurn } from "../entities/battle-turn.entity";
 
 export abstract class BattleDatasource {
 
@@ -9,7 +8,7 @@ export abstract class BattleDatasource {
 
   abstract getBattle(battleId: number): Promise<Battle>;
 
-  abstract recordTurn(battleId: number, attackerId: number, moveId: number): Promise<BattleTurn>;
+  abstract recordTurn(battleId: number, attackerId: number, moveId: number): Promise<Battle>;
 
   abstract finishBattle(battleId: number, winnerId: number): Promise<Battle>;
 }

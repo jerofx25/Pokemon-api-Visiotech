@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { PokemonRoutes } from "./pokemon/routes";
 import { MoveRoutes } from "./move/routes";
+import { BattleRoutes } from "./battle/routers";
 
 
 
@@ -10,8 +11,9 @@ export class AppRouter{
 
         const router = Router();
 
-        router.use("/api/pokemon", PokemonRoutes.routes);
-        router.use("/api/move", MoveRoutes.routes);
+        router.use("/pokemon", PokemonRoutes.routes);
+        router.use("/move", MoveRoutes.routes);
+        router.use("/battle", BattleRoutes.routes);
 
         return router;
     }

@@ -116,6 +116,7 @@ model BattleTurn {
   effectiveness   Float
   randomRoll      Int
   defenderHpAfter Int
+  attackerHpAfter Int?
   createdAt       DateTime @default(now())
 
   battle   Battle  @relation(fields: [battleId], references: [id])
