@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { PokemonRoutes } from "./pokemon/routes";
 import { MoveRoutes } from "./move/routes";
-import { BattleRoutes } from "./battle/routers";
+import { BattleRoutes } from "./battle/routes";
 
 
 
