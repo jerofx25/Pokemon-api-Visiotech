@@ -67,20 +67,22 @@ export class PokemonController {
             .catch(error => res.status(400).json({ error }));
     };
 
-    public assingMoveToPokemon = (req: Request, res: Response) => {
+    public assignMoveToPokemon = (req: Request, res: Response) => {
 
         const pokemonId = +req.params.pokemonId!;
-        const {moves} = req.body;
+        const {moveIds} = req.body;
 
         const [error, assingMovesToPokemonDto] = AssignMovesToPokemonDto.create({
             pokemonId,
-            moveIds: moves
+            moveIds
         });
+
+        if (error) return res.status(400).json({ error });
 
         new AssignMovesToPokemon(this.pokemonRepository)
             .execute(assingMovesToPokemonDto!)
             .then(pokemon => res.json(pokemon))
-            .catch(error => res.status(400).json({ error }));
+            .catch(error => res.status(400).json({ error: error instanceof Error ? error.message : String(error) }));
     };
 
 }

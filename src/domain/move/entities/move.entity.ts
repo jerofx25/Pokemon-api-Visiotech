@@ -34,11 +34,11 @@ export class Move {
     if (!type) throw 'Move type is required';
     if (!category) throw 'Move category is required';
 
-    const enumType = String(type) as keyof PokemonType;
-    if (!(enumType in PokemonType)) throw `Move type '${type}' is not valid`;
+    if (!Object.values(PokemonType).includes(type))
+    throw `Move type '${type}' is not valid`;
 
-    const enumCategory = String(category) as keyof MoveCategory;
-    if (!(enumCategory in MoveCategory)) throw `Move category '${category}' is not valid`;
+    if (!Object.values(MoveCategory).includes(category))
+    throw `Move category '${category}' is not valid`;
 
     const parsedPower = Number(power);
     if (isNaN(parsedPower)) throw 'Move power must be a valid number';
@@ -59,8 +59,8 @@ export class Move {
     return new Move(
       Number(id),
       name,
-      type,
-      category,
+      type as PokemonType,
+      category as MoveCategory,
       parsedPower,
       parsedAccuracy,
       parsedPp,

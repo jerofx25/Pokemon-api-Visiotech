@@ -3,12 +3,12 @@ import { Pokemon } from "../../entities/pokemon.entity";
 import { PokemonRepository } from "../../repository/pokemon.repository";
 
 
-export interface UpdateTodoUseCase {
+export interface UpdatePokemonUseCase {
   execute( dto: UpdatePokemonDto ): Promise<Pokemon>
 }
 
 
-export class UpdatePokemon implements UpdateTodoUseCase {
+export class UpdatePokemon implements UpdatePokemonUseCase {
   
   constructor(
     private readonly repository: PokemonRepository,

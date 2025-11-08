@@ -3,12 +3,12 @@ import { PokemonRepository } from "../../repository/pokemon.repository";
 
 
 
-export interface GetTodoUseCase {
+export interface GetPokemonUseCase {
   execute( id: number ): Promise<Pokemon>
 }
 
 
-export class GetPokemon implements GetTodoUseCase {
+export class GetPokemon implements GetPokemonUseCase {
   
   constructor(
     private readonly repository: PokemonRepository,

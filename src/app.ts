@@ -2,11 +2,7 @@ import { envs } from "./config/envs";
 import { AppRouter } from "./presentation/routes";
 import { Server } from "./presentation/server";
 
-(() => {
 
-    main();
-
-}) ();
 
 function main(){
 
@@ -18,3 +14,5 @@ function main(){
     
     server.start();
 }
+
+main();
