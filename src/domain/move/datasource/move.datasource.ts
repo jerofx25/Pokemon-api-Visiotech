@@ -17,4 +17,5 @@ export abstract class MoveDatasource {
 
   abstract deleteById(id: number): Promise<Move>;
 
+  abstract findAllByType(type: string): Promise<Move[]>;
 }

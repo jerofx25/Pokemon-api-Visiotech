@@ -1,5 +1,4 @@
 import { Move } from "../../../move/entities/move.entity";
-import { Pokemon } from "../../entities/pokemon.entity";
 import { PokemonRepository } from "../../repository/pokemon.repository";
 
 

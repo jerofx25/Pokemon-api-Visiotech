@@ -12,6 +12,10 @@ export class MoveRepositoryImpl implements MoveRepository{
         private readonly datasource: MoveDatasource,
     ){}
 
+    findAllByType(type: string): Promise<Move[]> {
+        return this.datasource.findAllByType(type);
+    }
+
     create(createMoveDto: CreateMoveDto): Promise<Move> {
         return this.datasource.create(createMoveDto);
     }

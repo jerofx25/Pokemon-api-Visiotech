@@ -11,11 +11,14 @@ import { AssignMovesToPokemonDto } from "../../domain/pokemon/dtos/pokemons/assi
 import { AssignMovesToPokemon } from "../../domain/pokemon/use-cases/pokemon/assign-moves-to-pokemon.use-case";
 import { GetPokemonMoves } from "../../domain/pokemon/use-cases/pokemon/get-pokemon-moves.use-case";
 import { error } from "console";
+import { GetPossibleMovesForPokemon } from "../../domain/pokemon/use-cases/pokemon/get-possible-moves.use-case";
+import { MoveRepository } from "../../domain/move/repository/move.repository";
 
 export class PokemonController {
 
     constructor(
-        private readonly pokemonRepository: PokemonRepository
+        private readonly pokemonRepository: PokemonRepository,
+        private readonly moveRepository: MoveRepository
     ){}
 
     public getPokemons = (req: Request, res: Response) => {
@@ -92,6 +95,18 @@ export class PokemonController {
         const id = +req.params.id!;
 
         new GetPokemonMoves(this.pokemonRepository)
+            .execute(id)
+            .then(moves => res.json(moves))
+            .catch(error => res.status(400).json({ error }));
+    };
+
+    public getPossibleMoves = (req: Request, res: Response) => {
+
+        const moveRepository = MoveRepository;
+
+        const id = +req.params.id!;
+
+        new GetPossibleMovesForPokemon(this.pokemonRepository, this.moveRepository)
             .execute(id)
             .then(moves => res.json(moves))
             .catch(error => res.status(400).json({ error }));

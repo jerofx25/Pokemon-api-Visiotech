@@ -1,3 +1,4 @@
+import { PokemonType } from "@prisma/client";
 import { prisma } from "../../../data/postgres";
 import { MoveDatasource } from "../../../domain/move/datasource/move.datasource";
 import { CreateMoveDto } from "../../../domain/move/dtos/create-move.dto";
@@ -7,6 +8,19 @@ import { Move } from "../../../domain/move/entities/move.entity";
 
 
 export class PostgresMoveDatasource implements MoveDatasource {
+
+    async findAllByType(type: string): Promise<Move[]> {
+
+        if(!Object.values(PokemonType).includes(type as PokemonType)) {
+            throw new Error(`Invalid Pokemon type: ${type}`);
+        }
+        
+        const moves = await prisma.move.findMany({
+            where:  {type: type as PokemonType}
+        });
+
+        return moves.map(Move.fromObject);
+    }
 
     async create(createMoveDto: CreateMoveDto): Promise<Move> {
         

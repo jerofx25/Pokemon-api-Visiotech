@@ -1,3 +1,4 @@
+import { PokemonType } from "../../shared/enums/pokemon-type.enum";
 import { CreatePokemonDto, UpdatePokemonDto } from "../dtos";
 import { AssignMovesToPokemonDto } from "../dtos/pokemons/assingn-moves-to-pokemon.dto";
 import { Pokemon } from "../entities/pokemon.entity";
