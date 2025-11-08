@@ -1,6 +1,7 @@
 import { PokemonDatasource } from '../../../domain/pokemon/datasource/pokemon.datasource';
 import { CreatePokemonDto, UpdatePokemonDto } from '../../../domain/pokemon/dtos';
 import { AssignMovesToPokemonDto } from '../../../domain/pokemon/dtos/pokemons/assingn-moves-to-pokemon.dto';
+import { RemoveMoveFromPokemonDto } from '../../../domain/pokemon/dtos/pokemons/remove-move-from-pokemon.dto';
 import { Pokemon } from '../../../domain/pokemon/entities/pokemon.entity';
 import { PokemonRepository } from '../../../domain/pokemon/repository/pokemon.repository';
 
@@ -9,6 +10,10 @@ import { PokemonRepository } from '../../../domain/pokemon/repository/pokemon.re
 export class PokemonRepositoryImpl implements PokemonRepository {
 
     constructor(private readonly datasource: PokemonDatasource) {}
+
+    removeMove(removeMoveFromPokemon: RemoveMoveFromPokemonDto): Promise<Pokemon> {
+        return this.datasource.removeMove(removeMoveFromPokemon);
+    }
 
     assingMoves(assingMovesToPokemonDto: AssignMovesToPokemonDto): Promise<Pokemon> {
         return this.datasource.assingMoves(assingMovesToPokemonDto);

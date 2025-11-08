@@ -29,6 +29,7 @@ export class PokemonRoutes {
         router.post("/:pokemonId/moves", pokemonController.assignMoveToPokemon);
         router.get("/:id/moves", pokemonController.getPokemonMoves);
         router.get("/:id/moves/possible", pokemonController.getPossibleMoves);
+        router.delete("/:pokemonId/moves/:moveId", pokemonController.removeMoveFromPokemon);
 
         return router;
     }

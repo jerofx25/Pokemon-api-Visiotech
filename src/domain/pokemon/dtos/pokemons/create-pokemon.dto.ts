@@ -14,7 +14,7 @@ export class CreatePokemonDto {
     public readonly specialAttack: number,
     public readonly specialDefense: number,
     public readonly speed: number,
-    public readonly moves: Move[],
+    public readonly moveIds: number[] = [],
   ) {}
 
   static create(props: { [key: string]: any }): [string | undefined, CreatePokemonDto?] {
@@ -23,7 +23,7 @@ export class CreatePokemonDto {
       name, level, type,
       currentHp, totalHp,
       attack, defense, specialAttack, specialDefense, speed,
-      moves = []
+      moveIds = []
     } = props;
 
     // Required validations
@@ -38,7 +38,7 @@ export class CreatePokemonDto {
     if (normalizedCurrentHp < 0 || normalizedCurrentHp > totalHp)
     return ['currentHp must be between 0 and totalHp'];
 
-    if (!Array.isArray(moves))
+    if (!Array.isArray(moveIds))
     return ["moves must be an array"];
 
     const stats = [
@@ -68,7 +68,7 @@ export class CreatePokemonDto {
         Number(specialAttack),
         Number(specialDefense),
         Number(speed),
-        moves,
+        moveIds,
       ),
     ];
   }

@@ -13,6 +13,8 @@ import { GetPokemonMoves } from "../../domain/pokemon/use-cases/pokemon/get-poke
 import { error } from "console";
 import { GetPossibleMovesForPokemon } from "../../domain/pokemon/use-cases/pokemon/get-possible-moves.use-case";
 import { MoveRepository } from "../../domain/move/repository/move.repository";
+import { RemoveMoveFromPokemon } from "../../domain/pokemon/use-cases/pokemon/remove-move-from-pokemon.use-case";
+import { RemoveMoveFromPokemonDto } from "../../domain/pokemon/dtos/pokemons/remove-move-from-pokemon.dto";
 
 export class PokemonController {
 
@@ -109,6 +111,20 @@ export class PokemonController {
         new GetPossibleMovesForPokemon(this.pokemonRepository, this.moveRepository)
             .execute(id)
             .then(moves => res.json(moves))
+            .catch(error => res.status(400).json({ error }));
+    };
+
+    public removeMoveFromPokemon = (req: Request, res: Response) => {
+
+        const pokemonId = +req.params.pokemonId!;
+        const moveId = +req.params.moveId!;
+
+        const [error, dto] = RemoveMoveFromPokemonDto.create({ pokemonId, moveId });
+        if (error) return res.status(400).json({ error });
+
+        new RemoveMoveFromPokemon(this.pokemonRepository)
+            .execute(dto!)
+            .then(pokemon => res.json(pokemon))
             .catch(error => res.status(400).json({ error }));
     };
 }
