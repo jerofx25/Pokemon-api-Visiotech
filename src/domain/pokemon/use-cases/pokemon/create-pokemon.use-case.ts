@@ -15,5 +15,5 @@ export class CreatePokemon implements CreatePokemonUseCase {
 
     execute(dto: CreatePokemonDto): Promise<Pokemon> {
         return this.repository.create(dto);
-    }
+    }   
 }
