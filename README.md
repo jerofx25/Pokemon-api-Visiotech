@@ -2,7 +2,7 @@
 
 API REST para gestionar Pokémons, Movimientos y Batallas Pokémon, implementada con Clean Architecture y TypeScript.
 
-## 📋 Tabla de Contenidos
+## Tabla de Contenidos
 
 - [Arquitectura](#-arquitectura)
 - [Estructura del Proyecto](#-estructura-del-proyecto)
@@ -15,7 +15,7 @@ API REST para gestionar Pokémons, Movimientos y Batallas Pokémon, implementada
 - [API Endpoints](#-api-endpoints)
 - [Tecnologías](#-tecnologías)
 
-## 🏗️ Arquitectura
+## Arquitectura
 
 Este proyecto implementa **Clean Architecture** (Arquitectura Limpia), también conocida como Arquitectura Hexagonal, que separa la lógica de negocio de los detalles de implementación.
 
@@ -30,30 +30,30 @@ Este proyecto implementa **Clean Architecture** (Arquitectura Limpia), también 
 ### Capas de la Arquitectura
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    PRESENTATION                         │
-│  (Controllers, Routes, Middlewares, DTOs)                │
-│  - Maneja requests HTTP                                 │
-│  - Valida entrada con DTOs (Zod)                       │
-│  - Orquesta casos de uso                                │
-└─────────────────────────────────────────────────────────┘
+
+                    PRESENTATION                       
+  (Controllers, Routes, Middlewares, DTOs)                
+  - Maneja requests HTTP                                 
+  - Valida entrada con DTOs (Zod)                      
+  - Orquesta casos de uso                               
+
                           ↓
-┌─────────────────────────────────────────────────────────┐
-│                      DOMAIN                             │
-│  (Entities, Use Cases, Repositories, DTOs)              │
-│  - Lógica de negocio pura                               │
-│  - Entidades del dominio                                │
-│  - Casos de uso (reglas de negocio)                     │
-│  - Interfaces de repositorios                           │
-└─────────────────────────────────────────────────────────┘
+
+                      DOMAIN                            
+  (Entities, Use Cases, Repositories, DTOs)           
+  - Lógica de negocio pura                               
+  - Entidades del dominio                                
+  - Casos de uso (reglas de negocio)                     
+  - Interfaces de repositorios                           
+
                           ↓
-┌─────────────────────────────────────────────────────────┐
-│                  INFRASTRUCTURE                         │
-│  (Datasources, Repository Implementations)               │
-│  - Implementaciones concretas                           │
-│  - Acceso a base de datos (Prisma)                      │
-│  - Integraciones externas                               │
-└─────────────────────────────────────────────────────────┘
+
+                  INFRASTRUCTURE                         
+  (Datasources, Repository Implementations)               
+  - Implementaciones concretas                           
+  - Acceso a base de datos (Prisma)                      
+  - Integraciones externas                               
+
 ```
 
 ### Flujo de Datos
@@ -86,87 +86,10 @@ Database (PostgreSQL via Prisma)
 6. **Datasource**: `PostgresPokemonDatasource.create()` ejecuta la query con Prisma
 7. **Database**: PostgreSQL almacena el Pokémon
 
-## 📁 Estructura del Proyecto
-
-```
-pokemon-api/
-├── src/
-│   ├── app.ts                          # Punto de entrada de la aplicación
-│   ├── config/
-│   │   └── envs.ts                     # Configuración de variables de entorno
-│   ├── data/
-│   │   └── postgres/
-│   │       └── index.ts                # Instancia de Prisma Client
-│   │
-│   ├── domain/                          # 🎯 CAPA DE DOMINIO (Lógica de Negocio)
-│   │   ├── battle/
-│   │   │   ├── datasource/             # Interfaz del datasource
-│   │   │   ├── dto/                     # DTOs de batalla
-│   │   │   ├── entities/                # Entidades: Battle, BattleTurn
-│   │   │   ├── repository/              # Interfaz del repositorio
-│   │   │   ├── use-case/                # Casos de uso: StartBattle, ExecuteTurn
-│   │   │   └── effectiveness.ts         # Lógica de efectividad de tipos
-│   │   ├── move/
-│   │   │   ├── datasource/              # Interfaz del datasource
-│   │   │   ├── dtos/                    # DTOs de movimientos
-│   │   │   ├── entities/                # Entidad: Move
-│   │   │   ├── repository/              # Interfaz del repositorio
-│   │   │   └── use-case/                # Casos de uso: Create, Update, Delete, Find
-│   │   ├── pokemon/
-│   │   │   ├── datasource/              # Interfaz del datasource
-│   │   │   ├── dtos/                    # DTOs de Pokémon
-│   │   │   ├── entities/                # Entidad: Pokemon
-│   │   │   ├── repository/              # Interfaz del repositorio
-│   │   │   └── use-cases/               # Casos de uso: CRUD, Asignar movimientos
-│   │   └── shared/
-│   │       └── enums/                   # Enums compartidos: PokemonType, MoveCategory
-│   │
-│   ├── infrastructure/                  # 🔧 CAPA DE INFRAESTRUCTURA
-│   │   ├── datasources/
-│   │   │   ├── battle/
-│   │   │   │   └── postgres-battle.datasource.ts
-│   │   │   ├── move/
-│   │   │   │   └── postgres-move.datasource.ts
-│   │   │   └── pokemon/
-│   │   │       └── postgres-pokemon.datasource.ts
-│   │   └── repositories/
-│   │       ├── battle/
-│   │       │   └── battle.repository.impl.ts
-│   │       ├── move/
-│   │       │   └── move.repository.impl.ts
-│   │       └── pokemon/
-│   │           └── pokemon.repository.impl.ts
-│   │
-│   └── presentation/                    # 🌐 CAPA DE PRESENTACIÓN
-│       ├── battle/
-│       │   ├── controller.ts            # Controlador de batallas
-│       │   └── routes.ts                # Rutas de batallas
-│       ├── move/
-│       │   ├── controller.ts            # Controlador de movimientos
-│       │   └── routes.ts                # Rutas de movimientos
-│       ├── pokemon/
-│       │   ├── controller.ts            # Controlador de Pokémons
-│       │   └── routes.ts                # Rutas de Pokémons
-│       ├── middlewares/
-│       │   ├── async-handler.ts         # Manejo de funciones async
-│       │   └── error-handler.ts         # Manejo de errores
-│       ├── routes.ts                    # Router principal
-│       └── server.ts                    # Configuración del servidor Express
-│
-├── prisma/
-│   ├── schema.prisma                    # Schema de Prisma
-│   ├── seed.ts                          # 🌱 Seeders para poblar la BD
-│   └── migrations/                      # Migraciones de la base de datos
-│
-├── docker-compose.yml                    # Configuración de Docker para PostgreSQL
-├── package.json
-├── tsconfig.json
-└── .env                                  # Variables de entorno (no versionado)
-```
 
 ### Descripción de Capas
 
-#### 🎯 Domain (Dominio)
+#### Domain (Dominio)
 - **Responsabilidad**: Contiene la lógica de negocio pura, independiente de frameworks y librerías externas.
 - **Componentes**:
   - **Entities**: Objetos de negocio con comportamiento (Pokemon, Move, Battle, BattleTurn)
@@ -175,13 +98,13 @@ pokemon-api/
   - **DTOs**: Objetos de transferencia de datos con validación (Zod)
   - **Datasource Interfaces**: Contratos para acceso a datos
 
-#### 🔧 Infrastructure (Infraestructura)
+#### Infrastructure (Infraestructura)
 - **Responsabilidad**: Implementaciones concretas de las interfaces definidas en el dominio.
 - **Componentes**:
   - **Datasources**: Implementaciones concretas usando Prisma
   - **Repository Implementations**: Implementaciones de los repositorios del dominio
 
-#### 🌐 Presentation (Presentación)
+#### Presentation (Presentación)
 - **Responsabilidad**: Maneja la comunicación HTTP, valida entrada y orquesta casos de uso.
 - **Componentes**:
   - **Controllers**: Manejan requests HTTP y respuestas
@@ -189,7 +112,7 @@ pokemon-api/
   - **Middlewares**: Manejo de errores, async handlers
   - **DTOs**: Validación de entrada con Zod
 
-## 🚀 Instalación
+##  Instalación
 
 ### Prerrequisitos
 
@@ -241,7 +164,7 @@ npm run prisma:migrate:dev
 npm run prisma:seed
 ```
 
-## 🌱 Seeders
+##  Seeders
 
 El proyecto incluye **3 seeders** para poblar la base de datos con datos iniciales:
 
@@ -288,7 +211,7 @@ Los seeders limpian automáticamente los datos existentes antes de crear nuevos 
 npm run prisma:seed
 ```
 
-## 🏃 Ejecución
+##  Ejecución
 
 ### Desarrollo
 ```bash
@@ -308,7 +231,7 @@ npm run dev:all
 
 El servidor estará disponible en `http://localhost:3000`
 
-## 🧪 Testing
+##  Testing
 
 ### Ejecutar Tests
 ```bash
@@ -353,7 +276,7 @@ src/
           create-move.dto.test.ts
 ```
 
-## 📚 API Endpoints
+## API Endpoints
 
 ### Pokémons
 
@@ -421,7 +344,7 @@ curl -X POST http://localhost:3000/battle/start \
 curl -X POST http://localhost:3000/battle/1/turn
 ```
 
-## 🛠️ Tecnologías
+## Tecnologías
 
 ### Core
 - **Node.js**: Runtime de JavaScript
@@ -444,7 +367,7 @@ curl -X POST http://localhost:3000/battle/1/turn
 - **dotenv**: Manejo de variables de entorno
 - **env-var**: Validación de variables de entorno
 
-## 📝 Scripts Disponibles
+## Scripts Disponibles
 
 | Script | Descripción |
 |--------|-------------|
@@ -459,7 +382,7 @@ curl -X POST http://localhost:3000/battle/1/turn
 | `npm run prisma:migrate:prod` | Ejecutar migraciones en producción |
 | `npm run prisma:seed` | Ejecutar seeders |
 
-## 🎯 Principios de Diseño Aplicados
+## Principios de Diseño Aplicados
 
 ### SOLID
 - **S**ingle Responsibility: Cada clase tiene una única responsabilidad
@@ -478,30 +401,11 @@ curl -X POST http://localhost:3000/battle/1/turn
 - Reutilización de código mediante funciones y clases
 - Evitar duplicación de lógica
 
-### KISS (Keep It Simple, Stupid)
-- Soluciones simples y directas
-- Evitar sobre-ingeniería
-
-## 🔒 Seguridad
+## Seguridad
 
 - Validación de entrada con Zod
 - Manejo de errores centralizado
 - Variables de entorno para configuración sensible
 - CORS configurado para desarrollo
 
-## 📈 Mejoras Futuras
 
-- [ ] Autenticación y autorización (JWT)
-- [ ] Rate limiting
-- [ ] Logging estructurado (Winston/Pino)
-- [ ] Documentación API con Swagger/OpenAPI
-- [ ] WebSockets para batallas en tiempo real
-- [ ] Caché con Redis
-- [ ] Tests de integración E2E
-- [ ] CI/CD pipeline
-- [ ] Dockerización completa
-- [ ] Health checks y métricas
-
-## 📄 Licencia
-
-Este proyecto es parte de una prueba técnica para desarrollador backend junior.
