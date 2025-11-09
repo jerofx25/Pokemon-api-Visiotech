@@ -12,6 +12,6 @@ export class AssignMovesToPokemon implements AssignMovesToPokemonUseCase {
   constructor(private readonly repository: PokemonRepository) {}
 
   execute(assignMovesToPokemonDto: AssignMovesToPokemonDto): Promise<Pokemon> {
-    return this.repository.assingMoves(assignMovesToPokemonDto);
+    return this.repository.assignMoves(assignMovesToPokemonDto);
   }
 }

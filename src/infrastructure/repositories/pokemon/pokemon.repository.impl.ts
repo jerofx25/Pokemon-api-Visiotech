@@ -15,8 +15,8 @@ export class PokemonRepositoryImpl implements PokemonRepository {
         return this.datasource.removeMove(removeMoveFromPokemon);
     }
 
-    assingMoves(assingMovesToPokemonDto: AssignMovesToPokemonDto): Promise<Pokemon> {
-        return this.datasource.assingMoves(assingMovesToPokemonDto);
+    assignMoves(assignMovesToPokemonDto: AssignMovesToPokemonDto): Promise<Pokemon> {
+        return this.datasource.assignMoves(assignMovesToPokemonDto);
     }
 
     create(createPokemonDto: CreatePokemonDto): Promise<Pokemon> {

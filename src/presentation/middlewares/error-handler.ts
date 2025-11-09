@@ -3,11 +3,17 @@ import { Request, Response, NextFunction } from "express";
 
 export function errorHandler(err: any, req: Request, res: Response, next: NextFunction){
 
-    console.log(err);
+    console.error(err);
 
     const status = err.status || 500;
-    const message = err.message || "Internal Server Error"
+    const message = err.message || "Internal Server Error";
 
-    return res.status(status).json({error: message});
+    const response: any = { error: message };
+
+    if (process.env.NODE_ENV !== "production" && err.stack) {
+        response.stack = err.stack;
+    }
+
+    return res.status(status).json(response);
     
 }

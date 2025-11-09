@@ -80,14 +80,14 @@ export class PokemonController {
 
         const {moveIds} = req.body;
 
-        const [error, assingMovesToPokemonDto] = AssignMovesToPokemonDto.create({
+        const [error, assignMovesToPokemonDto] = AssignMovesToPokemonDto.create({
             pokemonId,
             moveIds
         });
 
         if (error) return res.status(400).json({ error });
 
-        const pokemon = await new AssignMovesToPokemon(this.pokemonRepository).execute(assingMovesToPokemonDto!)
+        const pokemon = await new AssignMovesToPokemon(this.pokemonRepository).execute(assignMovesToPokemonDto!)
             
         res.status(200).json(pokemon);
     };

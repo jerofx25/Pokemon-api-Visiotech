@@ -1,4 +1,3 @@
-import e from "express";
 import { Move } from "../../move/entities/move.entity";
 import { PokemonType } from "../../shared/enums/pokemon-type.enum";
 

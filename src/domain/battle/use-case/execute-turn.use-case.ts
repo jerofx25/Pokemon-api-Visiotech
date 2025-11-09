@@ -27,21 +27,11 @@ export class ExecuteTurn implements  ExecuteTurnUseCase {
         const defender = attacker.id === pokemonA.id ? pokemonB : pokemonA;
 
         if (attacker.moves.length === 0) throw new Error("Attacker has no moves");
+        
         const move = attacker.moves[Math.floor(Math.random() * attacker.moves.length)];
+        if (!move) throw new Error("No move selected");
 
-        const rawDamage = (attacker.attack * move!.power) / defender.defense;
-        const randomFactor = Math.floor(Math.random() * 10);
-        const damage = Math.max(1, Math.floor(rawDamage + randomFactor));
-
-        const finalHp = Math.max(0, defender.currentHp - damage);
-
-        await this.battleRepository.recordTurn(battle.id, attacker.id, move!.id);
-
-        if (finalHp <= 0) {
-            return this.battleRepository.finishBattle(battle.id, attacker.id);
-        }
-
-        return this.battleRepository.getBattle(battle.id);
+        return await this.battleRepository.recordTurn(battle.id, attacker.id, move.id);
     }
 
 }

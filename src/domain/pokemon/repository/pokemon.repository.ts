@@ -16,7 +16,7 @@ export abstract class PokemonRepository {
 
   abstract deleteById(id: number): Promise<Pokemon>;
 
-  abstract assingMoves(assingMovesToPokemonDto: AssignMovesToPokemonDto): Promise<Pokemon>;
+  abstract assignMoves(assignMovesToPokemonDto: AssignMovesToPokemonDto): Promise<Pokemon>;
 
   abstract removeMove(removeMoveFromPokemon: RemoveMoveFromPokemonDto): Promise<Pokemon>;
 }

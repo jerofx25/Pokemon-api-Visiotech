@@ -32,35 +32,35 @@ export class PostgresPokemonDatasource implements PokemonDatasource {
       
     };
 
-    async assingMoves(assingMovesToPokemonDto: AssignMovesToPokemonDto): Promise<Pokemon> {
+    async assignMoves(assignMovesToPokemonDto: AssignMovesToPokemonDto): Promise<Pokemon> {
 
-      const pokemon = await prisma.pokemon.findUnique({ where: { id: assingMovesToPokemonDto.pokemonId }});
-      if (!pokemon) throw new Error(`Pokemon with id ${assingMovesToPokemonDto.pokemonId} not found`);
+      const pokemon = await prisma.pokemon.findUnique({ where: { id: assignMovesToPokemonDto.pokemonId }});
+      if (!pokemon) throw new Error(`Pokemon with id ${assignMovesToPokemonDto.pokemonId} not found`);
 
       const moves = await prisma.move.findMany({
-        where: { id: { in: assingMovesToPokemonDto.moveIds }}
+        where: { id: { in: assignMovesToPokemonDto.moveIds }}
       });
-      if (moves.length !== assingMovesToPokemonDto.moveIds.length) {
+      if (moves.length !== assignMovesToPokemonDto.moveIds.length) {
         throw new Error(`Some moves do not exist`);
       }
 
       const current = await prisma.pokemonMove.count({
-        where: { pokemonId: assingMovesToPokemonDto.pokemonId }
+        where: { pokemonId: assignMovesToPokemonDto.pokemonId }
       });
-      if (current + assingMovesToPokemonDto.moveIds.length > 4) {
+      if (current + assignMovesToPokemonDto.moveIds.length > 4) {
         throw new Error(`Pokemon can only have 4 moves`);
       }
 
     await prisma.pokemonMove.createMany({
       data: moves.map(move => ({
-        pokemonId: assingMovesToPokemonDto.pokemonId,
+        pokemonId: assignMovesToPokemonDto.pokemonId,
         moveId: move.id,
         pp: move.pp 
       }))
     });
 
     const updated = await prisma.pokemon.findUnique({
-      where: { id: assingMovesToPokemonDto.pokemonId },
+      where: { id: assignMovesToPokemonDto.pokemonId },
       include: { moves: { include: { move: true }}}
     });
 
