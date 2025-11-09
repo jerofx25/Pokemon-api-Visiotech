@@ -1,8 +1,58 @@
 import { MoveCategory } from "../../shared/enums/move-category.enum";
 import { PokemonType } from "../../shared/enums/pokemon-type.enum";
+import { z } from "zod";
 
 
 export class UpdateMoveDto {
+
+    static schema = z.object({
+    id: z.number().int().positive("id must be a valid number"),
+
+    name: z.string().min(1).optional(),
+
+    type: z.nativeEnum(PokemonType).refine(
+      (value) => Object.values(PokemonType).includes(value),
+      { message: "Invalid move type" }
+    ).optional(),
+
+    category: z.nativeEnum(MoveCategory).refine(
+      (value) => Object.values(MoveCategory).includes(value),
+      { message: "Invalid move category" }
+    ).optional(),
+
+    power: z.union([z.string(), z.number()]).transform((val) => {
+      if (val === undefined) return undefined;
+      const n = Number(val);
+      if (isNaN(n) || n < 0) throw new Error("power must be a non-negative number");
+      return n;
+    }).optional(),
+
+    accuracy: z.union([z.string(), z.number()]).transform((val) => {
+      if (val === undefined) return undefined;
+      const n = Number(val);
+      if (isNaN(n) || n < 0 || n > 100)
+        throw new Error("accuracy must be between 0 and 100");
+      return n;
+    }).optional(),
+
+    pp: z.union([z.string(), z.number()]).transform((val) => {
+      if (val === undefined) return undefined;
+      const n = Number(val);
+      if (isNaN(n) || n <= 0)
+        throw new Error("pp must be a positive number");
+      return n;
+    }).optional(),
+
+    effect: z.string().optional(),
+
+    probability: z.union([z.string(), z.number(), z.null(), z.undefined()]).transform((val) => {
+      if (val === undefined || val === null) return undefined;
+      const n = Number(val);
+      if (isNaN(n) || n < 0 || n > 100)
+        throw new Error("probability must be between 0 and 100");
+      return n;
+    }).optional(),
+  });
 
   private constructor(
     public readonly id: number,
@@ -35,6 +85,15 @@ export class UpdateMoveDto {
 
   static create(props: { [key: string]: any }): [string | undefined, UpdateMoveDto | undefined] {
 
+    const parsed = this.schema.safeParse({
+      ...props,
+      id: Number(props.id),
+    });
+
+    if (!parsed.success) {
+      return [parsed.error.issues[0]?.message, undefined];
+    }
+
     const {
       id,
       name,
@@ -44,49 +103,12 @@ export class UpdateMoveDto {
       accuracy,
       pp,
       effect,
-      probability
-    } = props;
-
-    // Validate ID
-    if (!id || isNaN(Number(id))) {
-      return ['id must be a valid number', undefined];
-    }
-
-    // Validate numeric fields when present
-    if (power !== undefined && (isNaN(Number(power)) || Number(power) < 0)) {
-      return ['power must be a non-negative number', undefined];
-    }
-
-    if (accuracy !== undefined && (isNaN(Number(accuracy)) || Number(accuracy) < 0 || Number(accuracy) > 100)) {
-      return ['accuracy must be between 0 and 100', undefined];
-    }
-
-    if (pp !== undefined && (isNaN(Number(pp)) || Number(pp) <= 0)) {
-      return ['pp must be a positive number', undefined];
-    }
-
-    let normalizedProbability: number | null | undefined = probability;
-
-    if (probability !== undefined && probability !== null) {
-      normalizedProbability = Number(probability);
-      if (isNaN(normalizedProbability) || normalizedProbability < 0 || normalizedProbability > 100) {
-        return ['probability must be a number between 0 and 100', undefined];
-      }
-    }
+      probability,
+    } = parsed.data;
 
     return [
       undefined,
-      new UpdateMoveDto(
-        Number(id),
-        name,
-        type,
-        category,
-        power !== undefined ? Number(power) : undefined,
-        accuracy !== undefined ? Number(accuracy) : undefined,
-        pp !== undefined ? Number(pp) : undefined,
-        effect,
-        normalizedProbability,
-      )
+      new UpdateMoveDto(id, name, type, category, power, accuracy, pp, effect, probability)
     ];
   }
 }
