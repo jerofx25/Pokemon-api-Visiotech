@@ -6,7 +6,7 @@ import { GetPokemon } from "../../domain/pokemon/use-cases/pokemon/get-pokemon.u
 import { CreatePokemonDto, UpdatePokemonDto } from "../../domain/pokemon/dtos";
 import { UpdatePokemon } from "../../domain/pokemon/use-cases/pokemon/update-pokemon.use-case";
 import { DeletePokemon } from "../../domain/pokemon/use-cases/pokemon/delete-pokemon.use-case";
-import { AssignMovesToPokemonDto } from "../../domain/pokemon/dtos/pokemons/assingn-moves-to-pokemon.dto";
+import { AssignMovesToPokemonDto } from "../../domain/pokemon/dtos/pokemons/assign-moves-to-pokemon.dto";
 import { AssignMovesToPokemon } from "../../domain/pokemon/use-cases/pokemon/assign-moves-to-pokemon.use-case";
 import { GetPokemonMoves } from "../../domain/pokemon/use-cases/pokemon/get-pokemon-moves.use-case";
 import { GetPossibleMovesForPokemon } from "../../domain/pokemon/use-cases/pokemon/get-possible-moves.use-case";
@@ -29,7 +29,7 @@ export class PokemonController {
 
     public getPokemonById = async (req: Request, res: Response) => {
 
-        const id = +req.params.id!;
+        const id = Number(req.params.id!);
 
         if (Number.isNaN(id)) throw { status: 400, message: "Invalid id" };
 
@@ -49,7 +49,7 @@ export class PokemonController {
 
     public updatePokemon = async (req: Request, res: Response) => {
         
-        const id = +req.params.id!;
+        const id = Number(req.params.id!);
 
         if (Number.isNaN(id)) throw { status: 400, message: "Invalid id" };
 
@@ -63,7 +63,7 @@ export class PokemonController {
 
     public deletePokemon = async (req: Request, res: Response) => {
 
-        const id = +req.params.id!;
+        const id = Number(req.params.id!);
 
         if (Number.isNaN(id)) throw { status: 400, message: "Invalid id" };
 
@@ -74,7 +74,7 @@ export class PokemonController {
 
     public assignMoveToPokemon = async (req: Request, res: Response) => {
 
-        const pokemonId = +req.params.pokemonId!;
+        const pokemonId = Number(req.params.pokemonId!);
 
         if (Number.isNaN(pokemonId)) throw { status: 400, message: "Invalid id" };
 
@@ -94,7 +94,7 @@ export class PokemonController {
 
     public getPokemonMoves = async (req: Request, res: Response) => {
 
-        const id = +req.params.id!;
+        const id = Number(req.params.id!);
 
         if (Number.isNaN(id)) throw { status: 400, message: "Invalid id" };
 
@@ -105,7 +105,7 @@ export class PokemonController {
 
     public getPossibleMoves = async (req: Request, res: Response) => {
 
-        const id = +req.params.id!;
+        const id = Number(req.params.id!);
 
         if (Number.isNaN(id)) throw { status: 400, message: "Invalid id" };
 
@@ -116,10 +116,10 @@ export class PokemonController {
 
     public removeMoveFromPokemon = async (req: Request, res: Response) => {
 
-        const pokemonId = +req.params.pokemonId!;
+        const pokemonId = Number(req.params.pokemonId!);
         if (Number.isNaN(pokemonId)) throw { status: 400, message: "Invalid id" };
 
-        const moveId = +req.params.moveId!;
+        const moveId = Number(req.params.moveId!);
         if (Number.isNaN(moveId)) throw { status: 400, message: "Invalid id" };
 
         const [error, dto] = RemoveMoveFromPokemonDto.create({ pokemonId, moveId });

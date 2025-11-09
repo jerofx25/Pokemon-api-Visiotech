@@ -1,4 +1,4 @@
-import { AssignMovesToPokemonDto } from "../../dtos/pokemons/assingn-moves-to-pokemon.dto";
+import { AssignMovesToPokemonDto } from "../../dtos/pokemons/assign-moves-to-pokemon.dto";
 import { Pokemon } from "../../entities/pokemon.entity";
 import { PokemonRepository } from "../../repository/pokemon.repository";
 

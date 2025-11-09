@@ -26,7 +26,7 @@ export class BattleController {
 
     public getBattle = async (req: Request, res: Response) => {
 
-        const battleId = +req.params.id!;
+        const battleId = Number(req.params.id!);
 
         if (Number.isNaN(battleId)) throw { status: 400, message: "Invalid id" };
 
@@ -37,7 +37,7 @@ export class BattleController {
 
     public executeTurn = async (req: Request, res: Response) => {
 
-        const battleId = +req.params.battleId!;
+        const battleId = Number(req.params.battleId!);
 
         if (Number.isNaN(battleId)) throw { status: 400, message: "Invalid id" };
 

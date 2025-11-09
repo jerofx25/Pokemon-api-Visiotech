@@ -1,7 +1,7 @@
 import { prisma } from "../../../data/postgres";
 import { PokemonDatasource } from "../../../domain/pokemon/datasource/pokemon.datasource";
 import { CreatePokemonDto, UpdatePokemonDto } from "../../../domain/pokemon/dtos";
-import { AssignMovesToPokemonDto } from "../../../domain/pokemon/dtos/pokemons/assingn-moves-to-pokemon.dto";
+import { AssignMovesToPokemonDto } from "../../../domain/pokemon/dtos/pokemons/assign-moves-to-pokemon.dto";
 import { RemoveMoveFromPokemonDto } from "../../../domain/pokemon/dtos/pokemons/remove-move-from-pokemon.dto";
 import { Pokemon } from "../../../domain/pokemon/entities/pokemon.entity";
 

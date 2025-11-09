@@ -26,7 +26,7 @@ export class MoveController {
 
     public getMoveById = async (req: Request, res: Response) => {
 
-        const id = +req.params.id!;
+        const id = Number(req.params.id!);
         if (Number.isNaN(id)) throw { status: 400, message: "Invalid id" };
 
         const move = await new FindMoveById(this.moveRepository).execute(id)
@@ -46,7 +46,7 @@ export class MoveController {
 
     public updateMove = async (req: Request, res: Response) => {
 
-        const id = +req.params.id!;
+        const id = Number(req.params.id!);
         if (Number.isNaN(id)) throw { status: 400, message: "Invalid id" };
 
         const [error, dto] = UpdateMoveDto.create({ ...req.body, id });
@@ -59,7 +59,7 @@ export class MoveController {
 
     public deleteMove = async(req: Request, res: Response) => {
 
-        const id = +req.params.id!;
+        const id = Number(req.params.id!);
         if (Number.isNaN(id)) throw { status: 400, message: "Invalid id" };
 
         const move = await new DeleteMove(this.moveRepository).execute(id)

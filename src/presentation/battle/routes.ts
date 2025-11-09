@@ -4,6 +4,7 @@ import { BattleRepositoryImpl } from "../../infrastructure/repositories/battle/b
 import { PostgresPokemonDatasource } from "../../infrastructure/datasources/pokemon/postgres-pokemon.datasource";
 import { PokemonRepositoryImpl } from "../../infrastructure/repositories/pokemon/pokemon.repository.impl";
 import { BattleController } from "./controller";
+import { asyncHandler } from "../middlewares/async-handler";
 
 
 
@@ -24,9 +25,9 @@ export class BattleRoutes {
             pokemonRepository,
         );
 
-        router.post("/start", battleController.startBattle);
-        router.get("/:id", battleController.getBattle);
-        router.post("/:battleId/turn", battleController.executeTurn);
+        router.post("/start", asyncHandler(battleController.startBattle));
+        router.get("/:id", asyncHandler(battleController.getBattle));
+        router.post("/:battleId/turn", asyncHandler(battleController.executeTurn));
 
         return router;
     }
