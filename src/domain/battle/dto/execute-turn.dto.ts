@@ -1,16 +1,27 @@
 
+import { z } from "zod";
+
 export class ExecuteTurnDto {
+
+    static schema = z.object({
+    battleId: z.number().int().positive("battleId must be a number"),
+  });
 
   private constructor(
     public readonly battleId: number,
   ) {}
 
   static create(props: any): [string | undefined, ExecuteTurnDto?] {
-    const { battleId } = props;
+    const result = this.schema.safeParse({
+      battleId: Number(props.battleId),
+    });
 
-    if (!battleId || isNaN(battleId))
-      return ['battleId must be a number'];
+    if (!result.success) {
+      return [result.error.issues[0]?.message];
+    }
 
-    return [undefined, new ExecuteTurnDto(Number(battleId))];
+    const { battleId } = result.data;
+
+    return [undefined, new ExecuteTurnDto(battleId)];
   }
 }
