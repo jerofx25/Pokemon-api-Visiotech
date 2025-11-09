@@ -21,7 +21,7 @@ export class BattleController {
 
         const battle = await new StartBattle(this.battleRepository, this.pokemonRepository).execute(dto!);
         
-        res.json(battle);
+        res.status(201).location(`/battle/${battle.id}`).json(battle);
     }
 
     public getBattle = async (req: Request, res: Response) => {
@@ -32,20 +32,19 @@ export class BattleController {
 
         const battle = await this.battleRepository.getBattle(battleId);
 
-        res.json(battle);
+        res.status(200).json(battle);
     };
 
     public executeTurn = async (req: Request, res: Response) => {
 
         const battleId = Number(req.params.battleId!);
-
         if (Number.isNaN(battleId)) throw { status: 400, message: "Invalid id" };
 
         const [error, dto] = ExecuteTurnDto.create({battleId});
         if (error) return res.status(400).json({ message: error});
 
-        const battle = await new ExecuteTurn(this.battleRepository, this.pokemonRepository).execute(dto!)
+        const result = await new ExecuteTurn(this.battleRepository, this.pokemonRepository).execute(dto!)
 
-        res.json(battle);
+        res.status(200).json(result);
     };
 }

@@ -10,6 +10,7 @@ import { DeleteMove } from "../../domain/move/use-case/delete-move.use-case";
 
 
 
+
 export class MoveController {
 
     constructor(
@@ -18,9 +19,9 @@ export class MoveController {
 
     public getMoves = async (req: Request, res: Response) => {
 
-        const move = new FindAllMoves(this.moveRepository).execute();
+        const move = await new FindAllMoves(this.moveRepository).execute();
 
-        res.json(move);
+        res.status(200).json(move);
 
     };
 
@@ -31,7 +32,7 @@ export class MoveController {
 
         const move = await new FindMoveById(this.moveRepository).execute(id)
 
-        res.json(move);
+        res.status(200).json(move);
     };
 
     public createMove = async (req: Request, res: Response) => {
@@ -41,7 +42,7 @@ export class MoveController {
 
         const move = await new CreateMove(this.moveRepository).execute(dto!)
 
-        res.json(move);
+        res.status(201).location(`/move/${move.id}`).json(move);
     };
 
     public updateMove = async (req: Request, res: Response) => {
@@ -54,7 +55,7 @@ export class MoveController {
 
         const move = await new UpdateMove(this.moveRepository).execute(dto!)
 
-        res.json(move);
+        res.status(200).json(move);
     };
 
     public deleteMove = async(req: Request, res: Response) => {
@@ -64,7 +65,7 @@ export class MoveController {
 
         const move = await new DeleteMove(this.moveRepository).execute(id)
 
-        res.json(move);
+        res.status(204).send();
     };
 
 }

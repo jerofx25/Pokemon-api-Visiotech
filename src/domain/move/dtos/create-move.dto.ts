@@ -1,5 +1,6 @@
 import { MoveCategory } from "../../shared/enums/move-category.enum";
 import { PokemonType } from "../../shared/enums/pokemon-type.enum";
+import { z } from "zod";
 
 
 export class CreateMoveDto {

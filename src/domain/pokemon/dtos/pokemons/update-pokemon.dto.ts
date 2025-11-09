@@ -1,7 +1,27 @@
 import { Move } from "../../../move/entities/move.entity";
 import { PokemonType } from "../../../shared/enums/pokemon-type.enum";
+import { z } from "zod";
 
 export class UpdatePokemonDto {
+
+  static schema = z.object({
+    id: z.number().int().positive("id must be a valid number"),
+
+    name: z.string().min(1).optional(),
+    level: z.number().int().positive().optional(),
+    type: z.nativeEnum(PokemonType).optional(),
+
+    currentHp: z.number().int().nonnegative().optional(),
+    totalHp: z.number().int().positive().optional(),
+
+    attack: z.number().int().nonnegative().optional(),
+    defense: z.number().int().nonnegative().optional(),
+    specialAttack: z.number().int().nonnegative().optional(),
+    specialDefense: z.number().int().nonnegative().optional(),
+    speed: z.number().int().nonnegative().optional(),
+
+    moves: z.array(z.any()).max(4, "moves cannot exceed 4").optional(),
+  });
 
   private constructor(
     public readonly id: number,
@@ -38,22 +58,29 @@ export class UpdatePokemonDto {
 
   static create(props: { [key: string]: any }): [string | undefined, UpdatePokemonDto?] {
     
-    const { id, moves, ...rest } = props;
+    const parsed = this.schema.safeParse({
+      ...props,
+      id: Number(props.id),
+      level: props.level !== undefined ? Number(props.level) : undefined,
+      currentHp: props.currentHp !== undefined ? Number(props.currentHp) : undefined,
+      totalHp: props.totalHp !== undefined ? Number(props.totalHp) : undefined,
+      attack: props.attack !== undefined ? Number(props.attack) : undefined,
+      defense: props.defense !== undefined ? Number(props.defense) : undefined,
+      specialAttack: props.specialAttack !== undefined ? Number(props.specialAttack) : undefined,
+      specialDefense: props.specialDefense !== undefined ? Number(props.specialDefense) : undefined,
+      speed: props.speed !== undefined ? Number(props.speed) : undefined,
+    });
 
-    // Validate ID
-    if (!id || isNaN(Number(id))) {
-      return ['id must be a valid number'];
+    if (!parsed.success) {
+      return [parsed.error.issues[0]?.message];
     }
 
-    // Validate and parse moves if provided
+    const data = parsed.data;
+
     let parsedMoves: Move[] | undefined = undefined;
 
-    if (moves !== undefined) {
-
-      if (!Array.isArray(moves)) return ['moves must be an array'];
-      if (moves.length > 4) return ['moves cannot exceed 4'];
-
-      parsedMoves = moves.map((m: any) =>
+    if (data.moves !== undefined) {
+      parsedMoves = data.moves.map((m: any) =>
         new Move(
           Number(m.id),
           m.name,
@@ -71,17 +98,17 @@ export class UpdatePokemonDto {
     return [
       undefined,
       new UpdatePokemonDto(
-        Number(id),
-        rest.name,
-        rest.level !== undefined ? Number(rest.level) : undefined,
-        rest.type,
-        rest.currentHp !== undefined ? Number(rest.currentHp) : undefined,
-        rest.totalHp !== undefined ? Number(rest.totalHp) : undefined,
-        rest.attack !== undefined ? Number(rest.attack) : undefined,
-        rest.defense !== undefined ? Number(rest.defense) : undefined,
-        rest.specialAttack !== undefined ? Number(rest.specialAttack) : undefined,
-        rest.specialDefense !== undefined ? Number(rest.specialDefense) : undefined,
-        rest.speed !== undefined ? Number(rest.speed) : undefined,
+        data.id,
+        data.name,
+        data.level,
+        data.type,
+        data.currentHp,
+        data.totalHp,
+        data.attack,
+        data.defense,
+        data.specialAttack,
+        data.specialDefense,
+        data.speed,
         parsedMoves
       )
     ];

@@ -1,6 +1,12 @@
 
+import { z } from "zod";
 
 export class RemoveMoveFromPokemonDto {
+
+  static schema = z.object({
+    pokemonId: z.number().int().positive("pokemonId must be a valid number"),
+    moveId: z.number().int().positive("moveId must be a valid number"),
+  });
 
   private constructor(
     public readonly pokemonId: number,
@@ -8,14 +14,20 @@ export class RemoveMoveFromPokemonDto {
   ) {}
 
   static create(props: { [key: string]: any }): [string | undefined, RemoveMoveFromPokemonDto?] {
+    
+    const parsed = this.schema.safeParse({
+      pokemonId: Number(props.pokemonId),
+      moveId: Number(props.moveId),
+    });
+
+    if (!parsed.success) {
+      return [parsed.error.issues[0]?.message];
+    }
+    
     const { pokemonId, moveId } = props;
 
-    if (!pokemonId || isNaN(Number(pokemonId)))
-      return ['pokemonId must be a valid number'];
-
-    if (!moveId || isNaN(Number(moveId)))
-      return ['moveId must be a valid number'];
-
-    return [undefined, new RemoveMoveFromPokemonDto(Number(pokemonId), Number(moveId))];
+    return [undefined, new RemoveMoveFromPokemonDto(
+      Number(pokemonId), Number(moveId)
+    )];
   }
 }

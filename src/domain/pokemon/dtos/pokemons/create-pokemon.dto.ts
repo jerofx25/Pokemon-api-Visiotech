@@ -1,7 +1,38 @@
-import { Move } from "../../../move/entities/move.entity";
+
 import { PokemonType } from "../../../shared/enums/pokemon-type.enum";
+import { z } from "zod";
 
 export class CreatePokemonDto {
+
+  static schema = z.object({
+
+    name: z.string().min(1, "name is required"),
+    level: z.number().int().positive("level must be a positive number"),
+    type: z.nativeEnum(PokemonType).refine(
+      (value) => Object.values(PokemonType).includes(value),
+      { message: "Invalid pokemon type" }
+    ),
+    totalHp: z.number().int().positive("totalHp must be a positive number"),
+    currentHp: z.number().int().optional(),
+
+    attack: z.number().int().nonnegative("attack must be a non-negative number"),
+    defense: z.number().int().nonnegative("defense must be a non-negative number"),
+    specialAttack: z.number().int().nonnegative("specialAttack must be a non-negative number"),
+    specialDefense: z.number().int().nonnegative("specialDefense must be a non-negative number"),
+    speed: z.number().int().nonnegative("speed must be a non-negative number"),
+
+    moveIds: z.array(z.number().int().positive()).optional().default([]),
+  })
+  .transform((data) => {
+
+    const currentHp = data.currentHp ?? data.totalHp;
+
+    if (currentHp < 0 || currentHp > data.totalHp) {
+      throw new Error("currentHp must be between 0 and totalHp");
+    }
+
+    return { ...data, currentHp };
+  });
 
   private constructor(
     public readonly name: string,
@@ -19,55 +50,33 @@ export class CreatePokemonDto {
 
   static create(props: { [key: string]: any }): [string | undefined, CreatePokemonDto?] {
 
+    const result = this.schema.safeParse(props);
+
+    if(!result.success){
+      return [result.error.issues[0]?.message]
+    }
+
     const {
       name, level, type,
       currentHp, totalHp,
       attack, defense, specialAttack, specialDefense, speed,
       moveIds = []
-    } = props;
-
-    // Required validations
-    if (!name) return ['name is required'];
-    if (!type) return ['type is required'];
-
-    if (isNaN(level) || level <= 0) return ['level must be a positive number'];
-    if (isNaN(totalHp) || totalHp <= 0) return ['totalHp must be a positive number'];
-
-    
-    const normalizedCurrentHp = currentHp ?? totalHp;
-    if (normalizedCurrentHp < 0 || normalizedCurrentHp > totalHp)
-    return ['currentHp must be between 0 and totalHp'];
-
-    if (!Array.isArray(moveIds))
-    return ["moves must be an array"];
-
-    const stats = [
-      ['attack', attack],
-      ['defense', defense],
-      ['specialAttack', specialAttack],
-      ['specialDefense', specialDefense],
-      ['speed', speed],
-    ];
-
-    for (const [statName, statValue] of stats) {
-      if (isNaN(statValue) || statValue < 0)
-        return [`${statName} must be a non-negative number`];
-    }
+    } = result.data!;
 
 
     return [
       undefined,
       new CreatePokemonDto(
         name,
-        Number(level),
+        level,
         type,
-        Number(normalizedCurrentHp),
-        Number(totalHp),
-        Number(attack),
-        Number(defense),
-        Number(specialAttack),
-        Number(specialDefense),
-        Number(speed),
+        currentHp,
+        totalHp,
+        attack,
+        defense,
+        specialAttack,
+        specialDefense,
+        speed,
         moveIds,
       ),
     ];

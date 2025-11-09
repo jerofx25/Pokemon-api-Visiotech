@@ -24,7 +24,7 @@ export class PokemonController {
     public getPokemons = async (req: Request, res: Response) => {
 
         const pokemon = await new GetAllPokemon(this.pokemonRepository).execute()
-        return res.json(pokemon);
+        res.status(200).json(pokemon);
     };
 
     public getPokemonById = async (req: Request, res: Response) => {
@@ -34,7 +34,7 @@ export class PokemonController {
         if (Number.isNaN(id)) throw { status: 400, message: "Invalid id" };
 
         const pokemon = await new GetPokemon(this.pokemonRepository).execute(id);
-        res.json(pokemon);
+        res.status(200).json(pokemon);
     };
 
     public createPokemon = async (req: Request, res: Response) => {
@@ -44,7 +44,7 @@ export class PokemonController {
 
         const pokemon = await new CreatePokemon(this.pokemonRepository).execute(createPokemonDto!)
             
-        res.json(pokemon);
+        res.status(201).location(`/pokemon/${pokemon.id}`).json(pokemon);
     };
 
     public updatePokemon = async (req: Request, res: Response) => {
@@ -58,7 +58,7 @@ export class PokemonController {
 
         const pokemon = await new UpdatePokemon(this.pokemonRepository).execute(updatePokemonDto!)
         
-        res.json(pokemon);
+        res.status(200).json(pokemon);
     };
 
     public deletePokemon = async (req: Request, res: Response) => {
@@ -69,7 +69,7 @@ export class PokemonController {
 
         const pokemon = await new DeletePokemon(this.pokemonRepository).execute(id)
             
-        res.json(pokemon);
+        res.status(204).send();
     };
 
     public assignMoveToPokemon = async (req: Request, res: Response) => {
@@ -89,7 +89,7 @@ export class PokemonController {
 
         const pokemon = await new AssignMovesToPokemon(this.pokemonRepository).execute(assingMovesToPokemonDto!)
             
-        res.json(pokemon);
+        res.status(200).json(pokemon);
     };
 
     public getPokemonMoves = async (req: Request, res: Response) => {
@@ -100,7 +100,7 @@ export class PokemonController {
 
         const pokemon = await new GetPokemonMoves(this.pokemonRepository).execute(id)
             
-        res.json(pokemon);
+        res.status(200).json(pokemon);
     };
 
     public getPossibleMoves = async (req: Request, res: Response) => {
@@ -111,7 +111,7 @@ export class PokemonController {
 
         const pokemon = await new GetPossibleMovesForPokemon(this.pokemonRepository, this.moveRepository).execute(id)
         
-        res.json(pokemon);
+        res.status(200).json(pokemon);
     };
 
     public removeMoveFromPokemon = async (req: Request, res: Response) => {
@@ -127,6 +127,6 @@ export class PokemonController {
 
         const pokemon = await new RemoveMoveFromPokemon(this.pokemonRepository).execute(dto!)
           
-        res.json(pokemon);
+        res.status(204).send();
     };
 }
