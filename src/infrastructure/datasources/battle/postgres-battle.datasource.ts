@@ -2,7 +2,6 @@ import { BattleDatasource } from "../../../domain/battle/datasource/battle.datas
 import { Battle } from "../../../domain/battle/entities/battle.entity";
 import { prisma } from "../../../data/postgres";
 import { typeEffectiveness } from "../../../domain/battle/effectiveness";
-import e from "express";
 
 
 
@@ -65,6 +64,10 @@ export class PostgresBattleDatasource implements BattleDatasource{
         
         const battle = await prisma.battle.findUnique({ where: { id: battleId }});
         if (!battle) throw new Error("Battle not found");
+
+        if(battle.status === "finished"){
+            throw new Error("This battle has already been completed.")
+        }
 
         const attackerIsA = battle.pokemonAId === attackerId;
         const defenderId = attackerIsA ? battle.pokemonBId : battle.pokemonAId;

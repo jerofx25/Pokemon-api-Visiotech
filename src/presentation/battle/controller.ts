@@ -14,40 +14,38 @@ export class BattleController {
         private readonly pokemonRepository: PokemonRepository,
     ){}
 
-    public startBattle = (req: Request, res: Response) => {
+    public startBattle = async (req: Request, res: Response) => {
 
         const [error, dto] = StartBattleDto.create(req.body);
         if (error) return res.status(400).json({ error });
 
-        new StartBattle(this.battleRepository, this.pokemonRepository)
-            .execute(dto!)
-            .then(battle => res.json(battle))
-            .catch(error => res.status(400).json({ error }));
+        const battle = await new StartBattle(this.battleRepository, this.pokemonRepository).execute(dto!);
+        
+        res.json(battle);
     }
 
-    public getBattle = (req: Request, res: Response) => {
+    public getBattle = async (req: Request, res: Response) => {
 
         const battleId = +req.params.id!;
 
-        this.battleRepository.getBattle(battleId)
-            .then(battle => res.json(battle))
-            .catch(error => res.status(400).json({ error }));
+        if (Number.isNaN(battleId)) throw { status: 400, message: "Invalid id" };
+
+        const battle = await this.battleRepository.getBattle(battleId);
+
+        res.json(battle);
     };
 
     public executeTurn = async (req: Request, res: Response) => {
 
         const battleId = +req.params.battleId!;
 
-        const [error, dto] = ExecuteTurnDto.create({battleId});
-        if (error) return res.status(400).json({ error });
+        if (Number.isNaN(battleId)) throw { status: 400, message: "Invalid id" };
 
-        new ExecuteTurn(this.battleRepository, this.pokemonRepository)
-            .execute(dto!)
-            .then(battle => res.json(battle))  
-            .catch(error => {
-                console.error(error);
-                
-                res.status(400).json({ error })
-            });
+        const [error, dto] = ExecuteTurnDto.create({battleId});
+        if (error) return res.status(400).json({ message: error});
+
+        const battle = await new ExecuteTurn(this.battleRepository, this.pokemonRepository).execute(dto!)
+
+        res.json(battle);
     };
 }

@@ -6,11 +6,9 @@ import { GetPokemon } from "../../domain/pokemon/use-cases/pokemon/get-pokemon.u
 import { CreatePokemonDto, UpdatePokemonDto } from "../../domain/pokemon/dtos";
 import { UpdatePokemon } from "../../domain/pokemon/use-cases/pokemon/update-pokemon.use-case";
 import { DeletePokemon } from "../../domain/pokemon/use-cases/pokemon/delete-pokemon.use-case";
-import { Move } from '../../domain/move/entities/move.entity';
 import { AssignMovesToPokemonDto } from "../../domain/pokemon/dtos/pokemons/assingn-moves-to-pokemon.dto";
 import { AssignMovesToPokemon } from "../../domain/pokemon/use-cases/pokemon/assign-moves-to-pokemon.use-case";
 import { GetPokemonMoves } from "../../domain/pokemon/use-cases/pokemon/get-pokemon-moves.use-case";
-import { error } from "console";
 import { GetPossibleMovesForPokemon } from "../../domain/pokemon/use-cases/pokemon/get-possible-moves.use-case";
 import { MoveRepository } from "../../domain/move/repository/move.repository";
 import { RemoveMoveFromPokemon } from "../../domain/pokemon/use-cases/pokemon/remove-move-from-pokemon.use-case";
@@ -23,60 +21,63 @@ export class PokemonController {
         private readonly moveRepository: MoveRepository
     ){}
 
-    public getPokemons = (req: Request, res: Response) => {
+    public getPokemons = async (req: Request, res: Response) => {
 
-        new GetAllPokemon(this.pokemonRepository)
-            .execute()
-            .then(pokemons => res.json(pokemons))
-            .catch(error => res.status(400).json({ error }));
+        const pokemon = await new GetAllPokemon(this.pokemonRepository).execute()
+        return res.json(pokemon);
     };
 
-    public getPokemonById = (req: Request, res: Response) => {
+    public getPokemonById = async (req: Request, res: Response) => {
 
         const id = +req.params.id!;
 
-        new GetPokemon(this.pokemonRepository)
-            .execute(id)
-            .then(pokemon => res.json(pokemon))
-            .catch(error => res.status(400).json({ error }));
+        if (Number.isNaN(id)) throw { status: 400, message: "Invalid id" };
+
+        const pokemon = await new GetPokemon(this.pokemonRepository).execute(id);
+        res.json(pokemon);
     };
 
-    public createPokemon = (req: Request, res: Response) => {
+    public createPokemon = async (req: Request, res: Response) => {
 
         const [error, createPokemonDto] = CreatePokemonDto.create(req.body);
         if (error) return res.status(400).json({ error });
 
-        new CreatePokemon(this.pokemonRepository)
-            .execute(createPokemonDto!)
-            .then(pokemon => res.json(pokemon))
-            .catch(error => res.status(400).json({ error }));
+        const pokemon = await new CreatePokemon(this.pokemonRepository).execute(createPokemonDto!)
+            
+        res.json(pokemon);
     };
 
-    public updatePokemon = (req: Request, res: Response) => {
+    public updatePokemon = async (req: Request, res: Response) => {
         
         const id = +req.params.id!;
+
+        if (Number.isNaN(id)) throw { status: 400, message: "Invalid id" };
+
         const [error, updatePokemonDto] = UpdatePokemonDto.create({...req.body, id});
         if (error) return  res.status(400).json({ error });
 
-        new UpdatePokemon(this.pokemonRepository)
-            .execute(updatePokemonDto!)
-            .then(pokemon => res.json(pokemon))
-            .catch(error => res.status(400).json({ error }));
+        const pokemon = await new UpdatePokemon(this.pokemonRepository).execute(updatePokemonDto!)
+        
+        res.json(pokemon);
     };
 
-    public deletePokemon = (req: Request, res: Response) => {
+    public deletePokemon = async (req: Request, res: Response) => {
 
         const id = +req.params.id!;
 
-        new DeletePokemon(this.pokemonRepository)
-            .execute(id)
-            .then(pokemon => res.json(pokemon))
-            .catch(error => res.status(400).json({ error }));
+        if (Number.isNaN(id)) throw { status: 400, message: "Invalid id" };
+
+        const pokemon = await new DeletePokemon(this.pokemonRepository).execute(id)
+            
+        res.json(pokemon);
     };
 
-    public assignMoveToPokemon = (req: Request, res: Response) => {
+    public assignMoveToPokemon = async (req: Request, res: Response) => {
 
         const pokemonId = +req.params.pokemonId!;
+
+        if (Number.isNaN(pokemonId)) throw { status: 400, message: "Invalid id" };
+
         const {moveIds} = req.body;
 
         const [error, assingMovesToPokemonDto] = AssignMovesToPokemonDto.create({
@@ -86,45 +87,46 @@ export class PokemonController {
 
         if (error) return res.status(400).json({ error });
 
-        new AssignMovesToPokemon(this.pokemonRepository)
-            .execute(assingMovesToPokemonDto!)
-            .then(pokemon => res.json(pokemon))
-            .catch(error => res.status(400).json({ error: error instanceof Error ? error.message : String(error) }));
+        const pokemon = await new AssignMovesToPokemon(this.pokemonRepository).execute(assingMovesToPokemonDto!)
+            
+        res.json(pokemon);
     };
 
-    public getPokemonMoves = (req: Request, res: Response) => {
+    public getPokemonMoves = async (req: Request, res: Response) => {
 
         const id = +req.params.id!;
 
-        new GetPokemonMoves(this.pokemonRepository)
-            .execute(id)
-            .then(moves => res.json(moves))
-            .catch(error => res.status(400).json({ error }));
+        if (Number.isNaN(id)) throw { status: 400, message: "Invalid id" };
+
+        const pokemon = await new GetPokemonMoves(this.pokemonRepository).execute(id)
+            
+        res.json(pokemon);
     };
 
-    public getPossibleMoves = (req: Request, res: Response) => {
-
-        const moveRepository = MoveRepository;
+    public getPossibleMoves = async (req: Request, res: Response) => {
 
         const id = +req.params.id!;
 
-        new GetPossibleMovesForPokemon(this.pokemonRepository, this.moveRepository)
-            .execute(id)
-            .then(moves => res.json(moves))
-            .catch(error => res.status(400).json({ error }));
+        if (Number.isNaN(id)) throw { status: 400, message: "Invalid id" };
+
+        const pokemon = await new GetPossibleMovesForPokemon(this.pokemonRepository, this.moveRepository).execute(id)
+        
+        res.json(pokemon);
     };
 
-    public removeMoveFromPokemon = (req: Request, res: Response) => {
+    public removeMoveFromPokemon = async (req: Request, res: Response) => {
 
         const pokemonId = +req.params.pokemonId!;
+        if (Number.isNaN(pokemonId)) throw { status: 400, message: "Invalid id" };
+
         const moveId = +req.params.moveId!;
+        if (Number.isNaN(moveId)) throw { status: 400, message: "Invalid id" };
 
         const [error, dto] = RemoveMoveFromPokemonDto.create({ pokemonId, moveId });
         if (error) return res.status(400).json({ error });
 
-        new RemoveMoveFromPokemon(this.pokemonRepository)
-            .execute(dto!)
-            .then(pokemon => res.json(pokemon))
-            .catch(error => res.status(400).json({ error }));
+        const pokemon = await new RemoveMoveFromPokemon(this.pokemonRepository).execute(dto!)
+          
+        res.json(pokemon);
     };
 }

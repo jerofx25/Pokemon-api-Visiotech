@@ -16,53 +16,55 @@ export class MoveController {
         private readonly moveRepository: MoveRepository
     ){}
 
-    public getMoves = (req: Request, res: Response) => {
+    public getMoves = async (req: Request, res: Response) => {
 
-        new FindAllMoves(this.moveRepository)
-            .execute()
-            .then(moves => res.json(moves))
-            .catch(error => res.status(400).json({error}))
+        const move = new FindAllMoves(this.moveRepository).execute();
+
+        res.json(move);
+
     };
 
-    public getMoveById = (req: Request, res: Response) => {
+    public getMoveById = async (req: Request, res: Response) => {
 
         const id = +req.params.id!;
-        new FindMoveById(this.moveRepository)
-            .execute(id)
-            .then(move => res.json(move))
-            .catch(error => res.status(400).json({ error }));
+        if (Number.isNaN(id)) throw { status: 400, message: "Invalid id" };
+
+        const move = await new FindMoveById(this.moveRepository).execute(id)
+
+        res.json(move);
     };
 
-    public createMove = (req: Request, res: Response) => {
+    public createMove = async (req: Request, res: Response) => {
 
         const [error, dto] = CreateMoveDto.create(req.body);
         if (error) return res.status(400).json({ error });
 
-        new CreateMove(this.moveRepository)
-            .execute(dto!)
-            .then(move => res.json(move))
-            .catch(error => res.status(400).json(error));
+        const move = await new CreateMove(this.moveRepository).execute(dto!)
+
+        res.json(move);
     };
 
-    public updateMove = (req: Request, res: Response) => {
+    public updateMove = async (req: Request, res: Response) => {
 
         const id = +req.params.id!;
+        if (Number.isNaN(id)) throw { status: 400, message: "Invalid id" };
+
         const [error, dto] = UpdateMoveDto.create({ ...req.body, id });
         if (error) return res.status(400).json({ error });
 
-        new UpdateMove(this.moveRepository)
-            .execute(dto!)
-            .then(move => res.json(move))
-            .catch(error => res.status(400).json(error));
+        const move = await new UpdateMove(this.moveRepository).execute(dto!)
+
+        res.json(move);
     };
 
-    public deleteMove = (req: Request, res: Response) => {
+    public deleteMove = async(req: Request, res: Response) => {
 
         const id = +req.params.id!;
-        new DeleteMove(this.moveRepository)
-            .execute(id)
-            .then(move => res.json(move))
-            .catch(err => res.status(400).json({ error: err.toString() }));
+        if (Number.isNaN(id)) throw { status: 400, message: "Invalid id" };
+
+        const move = await new DeleteMove(this.moveRepository).execute(id)
+
+        res.json(move);
     };
 
 }
